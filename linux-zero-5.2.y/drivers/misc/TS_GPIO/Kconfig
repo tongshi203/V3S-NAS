@@ -1,0 +1,10 @@
+menu "TS_GPIO"
+comment "TS_GPIO Driver"
+config TS_GPIO
+tristate "TS_GPIO"
+default y
+help
+	if you say Y here,support for the TS GPIO withcompture interface will becompiled into the kernel and accessible via device node. You can also say M here and the driver will be built as a module named PB8.ko.
+	if unsure , say N.
+
+endmenu

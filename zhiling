@@ -1,0 +1,50 @@
+uboot::
+
+cd u-boot
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LicheePi_Zero_800x480LCD_defconfig
+#or make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LicheePi_Zero480x272LCD_defconfig
+#or make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- LicheePi_Zero_defconfig
+make ARCH=arm menuconfig
+time make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- 2>&1 | tee build.log
+编译完成后，在当前目录下生成了u-boot-sunxi-with-spl.bin，可以烧录到8K偏移处启动。
+/home/ryan/Desktop/Ryan_Lichee/uboot-spi/u-boot/configs
+
+linux kernel::
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- licheepi_zero_defconfig
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- menuconfig   #add bluethooth, etc.
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- -j16
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- dtbs
+编译完成后，zImage在arch/arm/boot/下，驱动模块在out/下
+
+
+rootfs:
+make menuconfig
+再在system 设置下主机名，root密码等。
+最后就是配置自己需要的软件包，在menuconfig中选中即可。
+有时候下载速度慢，可以复制下载链接，使用迅雷等下载好后，拷贝到dl目录下，会自动识别。
+编译完成后，会生成 output/images/rootfs.tar，此即所需的根文件系
+
+
+4.13:
+sudo mkfs.jffs2 -s 0x100 -e 0x10000 -p 0xAF0000 -d rootfs/ -o jffs2.img
+
+5.2:
+sudo mkfs.jffs2 -s 0x100 -e 0x10000 -p 0x9F0000 -d rootfs/ -o jffs2.img
+
+
+
+dd if=/dev/zero of=flashimg.bin bs=16M count=1
+dd if=./root/u-boot/u-boot-sunxi-with-spl.bin of=flashimg.bin bs=1K conv=notrunc
+dd if=./root/linux/arch/arm/boot/dts/sun8i-v3s-licheepi-zero-dock.dtb of=flashimg.bin bs=1K seek=1024  conv=notrunc
+dd if=./root/linux/arch/arm/boot/zImage of=flashimg.bin bs=1K seek=1088  conv=notrunc
+dd if=./root/rootfs/jffs2.img of=flashimg.bin  bs=1K seek=5184  conv=notrunc
+
+
+download:
+
+sudo ./sunxi-fel -p spiflash-write 0 ../flashimg.bin
+
+
+
+

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DTMB_Control" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/DTMB_Control" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/DTMB_Control" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="m88dd3k/Makefile" />
+		<Unit filename="m88dd3k/MaxLinearDataTypes.h" />
+		<Unit filename="m88dd3k/MxL603_Features.h" />
+		<Unit filename="m88dd3k/MxL603_OEM_Drv.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/MxL603_OEM_Drv.h" />
+		<Unit filename="m88dd3k/MxL603_TunerApi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/MxL603_TunerApi.h" />
+		<Unit filename="m88dd3k/MxL603_TunerCfg.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/MxL603_TunerCfg.h" />
+		<Unit filename="m88dd3k/MxL603_TunerSpurTable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/MxL603_TunerSpurTable.h" />
+		<Unit filename="m88dd3k/MxL603_UserApi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/MxL_Debug.h" />
+		<Unit filename="m88dd3k/fe_dd3k_def.h" />
+		<Unit filename="m88dd3k/fe_dd3k_i2c.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/fe_dd3k_i2c.h" />
+		<Unit filename="m88dd3k/m88dd3k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/m88dd3k.h" />
+		<Unit filename="m88dd3k/main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/mt_fe_common.h" />
+		<Unit filename="m88dd3k/mt_fe_dmd_dd3k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/mt_fe_dmd_fw_dd3k.h" />
+		<Unit filename="m88dd3k/mt_fe_fw_tn_tc6800.h" />
+		<Unit filename="m88dd3k/mt_fe_tn_tc2800.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/mt_fe_tn_tc2800.h" />
+		<Unit filename="m88dd3k/mt_fe_tn_tc3800.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/mt_fe_tn_tc3800.h" />
+		<Unit filename="m88dd3k/mt_fe_tn_tc6800.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/mt_fe_tn_tc6800.h" />
+		<Unit filename="m88dd3k/mt_fe_tn_tdac3_c02a.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/mt_fe_tn_tdac7_d01.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="m88dd3k/nim_dd3k.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
