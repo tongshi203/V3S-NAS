@@ -386,6 +386,9 @@ static void sun6i_csi_setup_bus(struct sun6i_csi_dev *sdev)
 
 	bus_width = endpoint->bus.parallel.bus_width;
 
+    dev_dbg(sdev->dev,
+			"Set bus_width to %d bit!\n",bus_width);
+
 	regmap_read(sdev->regmap, CSI_IF_CFG_REG, &cfg);
 
 	cfg &= ~(CSI_IF_CFG_CSI_IF_MASK | CSI_IF_CFG_MIPI_IF_MASK |
@@ -398,6 +401,8 @@ static void sun6i_csi_setup_bus(struct sun6i_csi_dev *sdev)
 		cfg |= CSI_IF_CFG_SRC_TYPE_INTERLACED;
 	else
 		cfg |= CSI_IF_CFG_SRC_TYPE_PROGRESSED;
+
+    endpoint->bus_type = V4L2_MBUS_PARALLEL;//add by ryan
 
 	switch (endpoint->bus_type) {
 	case V4L2_MBUS_PARALLEL:
@@ -472,26 +477,30 @@ static void sun6i_csi_set_format(struct sun6i_csi_dev *sdev)
 		 CSI_CH_CFG_HFLIP_EN | CSI_CH_CFG_FIELD_SEL_MASK |
 		 CSI_CH_CFG_INPUT_SEQ_MASK);
 
-	val = get_csi_input_format(sdev, csi->config.code,
-				   csi->config.pixelformat);
+//	val = get_csi_input_format(sdev, csi->config.code,
+//				   csi->config.pixelformat);
+    val = 0;
 	cfg |= CSI_CH_CFG_INPUT_FMT(val);
 
-	val = get_csi_output_format(sdev, csi->config.pixelformat,
-				    csi->config.field);
+//	val = get_csi_output_format(sdev, csi->config.pixelformat,
+//				    csi->config.field);
 	cfg |= CSI_CH_CFG_OUTPUT_FMT(val);
 
-	val = get_csi_input_seq(sdev, csi->config.code,
-				csi->config.pixelformat);
+//	val = get_csi_input_seq(sdev, csi->config.code,
+//				csi->config.pixelformat);
 	cfg |= CSI_CH_CFG_INPUT_SEQ(val);
 
-	if (csi->config.field == V4L2_FIELD_TOP)
-		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD0;
-	else if (csi->config.field == V4L2_FIELD_BOTTOM)
-		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD1;
-	else
+//	if (csi->config.field == V4L2_FIELD_TOP)
+//		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD0;
+//	else if (csi->config.field == V4L2_FIELD_BOTTOM)
+//		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD1;
+//	else
 		cfg |= CSI_CH_CFG_FIELD_SEL_BOTH;
 
 	regmap_write(sdev->regmap, CSI_CH_CFG_REG, cfg);
+
+	dev_dbg(sdev->dev,
+			"Set pixelformat ok!\n");
 }
 
 static void sun6i_csi_set_window(struct sun6i_csi_dev *sdev)
