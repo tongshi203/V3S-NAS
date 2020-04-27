@@ -34,6 +34,6 @@ for i in /etc/init.d/S??* ;do
     esac
 done
 
-
+lighttpd start -f /sbin/lighttpd.conf
 
 
