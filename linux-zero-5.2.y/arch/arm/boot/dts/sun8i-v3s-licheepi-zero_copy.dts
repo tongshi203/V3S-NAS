@@ -72,23 +72,11 @@
 
 &i2c0 {
 	status = "okay";
-ov2640: camera@30 {
-				compatible = "ovti,ov2640";
-				reg = <0x30>;
-				pinctrl-names = "default";
-				pinctrl-0 = <&csi1_mclk>;
-				clocks = <&ccu CLK_CSI1_MCLK>;
-				clock-names = "xvclk";
-				assigned-clocks = <&ccu CLK_CSI1_MCLK>;
-				assigned-clock-rates = <24000000>;
-		
-				port {
-					ov2640_0: endpoint {
-						remote-endpoint = <&csi1_ep>;
-						bus-width = <8>;
-					};
-				};
-			};
+
+	ns2009: ns2009@48 {
+		compatible = "nsiway,ns2009";
+		reg = <0x48>;
+	};
 };
 
 &i2c1 {
@@ -136,20 +124,8 @@ ov2640: camera@30 {
 };
 
 &csi1 {
-        pinctrl-0 = <&dtmb_csi_pins >;
+        pinctrl-0 = <&dtmb_csi_pins>;
         pinctrl-names = "default";
         status = "okay";
-        port {
-			/* Parallel bus endpoint */
-			csi1_ep: endpoint {
-				bus-width = <8>;
-				remote-endpoint = <&ov2640_0>;
-				/* If hsync-active/vsync-active are missing,
-				   embedded BT.656 sync is used */
-				hsync-active = <1>; /* Active high */
-				vsync-active = <1>; /* Active high */
-				pclk-sample = <0>;  /* Falling */
-				};
-			};
 };
 

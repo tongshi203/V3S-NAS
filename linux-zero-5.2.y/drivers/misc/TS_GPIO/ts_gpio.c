@@ -42,8 +42,8 @@ _IOW  (魔数， 基数， 变量型)
 
 #define DEMOD_RST_GPIO  151
 #define STR_DEMOD_RST_GPIO  "Demod_RST_PE23"
-#define LED_GPIO        192
-#define STR_LED_GPIO  "GLED_PG0"
+#define LED_GPIO        194
+#define STR_LED_GPIO  "GLED_PG2"
 #define KEY_GPIO       152
 #define STR_KEY_GPIO  "KEY_PE24"
 

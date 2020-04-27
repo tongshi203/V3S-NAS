@@ -654,35 +654,34 @@ static struct ov2640_priv *to_ov2640(const struct i2c_client *client)
 static int ov2640_write_array(struct i2c_client *client,
 			      const struct regval_list *vals)
 {
-//	int ret;
-//
-//	while ((vals->reg_num != 0xff) || (vals->value != 0xff)) {
-//		ret = i2c_smbus_write_byte_data(client,
-//						vals->reg_num, vals->value);
-//		dev_vdbg(&client->dev, "array: 0x%02x, 0x%02x",
-//			 vals->reg_num, vals->value);
-//
-//		if (ret < 0)
-//			return ret;
-//		vals++;
-//	}
+	int ret;
+
+	while ((vals->reg_num != 0xff) || (vals->value != 0xff)) {
+		ret = i2c_smbus_write_byte_data(client,
+						vals->reg_num, vals->value);
+		dev_vdbg(&client->dev, "array: 0x%02x, 0x%02x",
+			 vals->reg_num, vals->value);
+
+		if (ret < 0)
+			return ret;
+		vals++;
+	}
 	return 0;
 }
 
 static int ov2640_mask_set(struct i2c_client *client,
 			   u8  reg, u8  mask, u8  set)
 {
-    return 0;
-//	s32 val = i2c_smbus_read_byte_data(client, reg);
-//	if (val < 0)
-//		return val;
-//
-//	val &= ~mask;
-//	val |= set & mask;
-//
-//	dev_vdbg(&client->dev, "masks: 0x%02x, 0x%02x", reg, val);
-//
-//	return i2c_smbus_write_byte_data(client, reg, val);
+	s32 val = i2c_smbus_read_byte_data(client, reg);
+	if (val < 0)
+		return val;
+
+	val &= ~mask;
+	val |= set & mask;
+
+	dev_vdbg(&client->dev, "masks: 0x%02x, 0x%02x", reg, val);
+
+	return i2c_smbus_write_byte_data(client, reg, val);
 }
 
 static int ov2640_reset(struct i2c_client *client)
@@ -730,44 +729,44 @@ static int ov2640_s_ctrl(struct v4l2_ctrl *ctrl)
 	 */
 	if (!priv->power_count)
 		return 0;
-return 0;
-//	ret = i2c_smbus_write_byte_data(client, BANK_SEL, BANK_SEL_SENS);
-//	if (ret < 0)
-//		return ret;
-//
-//	switch (ctrl->id) {
-//	case V4L2_CID_VFLIP:
-//		val = ctrl->val ? REG04_VFLIP_IMG | REG04_VREF_EN : 0x00;
-//		return ov2640_mask_set(client, REG04,
-//				       REG04_VFLIP_IMG | REG04_VREF_EN, val);
-//		/* NOTE: REG04_VREF_EN: 1 line shift / even/odd line swap */
-//	case V4L2_CID_HFLIP:
-//		val = ctrl->val ? REG04_HFLIP_IMG : 0x00;
-//		return ov2640_mask_set(client, REG04, REG04_HFLIP_IMG, val);
-//	case V4L2_CID_TEST_PATTERN:
-//		val = ctrl->val ? COM7_COLOR_BAR_TEST : 0x00;
-//		return ov2640_mask_set(client, COM7, COM7_COLOR_BAR_TEST, val);
-//	}
-//
-//	return -EINVAL;
+
+	ret = i2c_smbus_write_byte_data(client, BANK_SEL, BANK_SEL_SENS);
+	if (ret < 0)
+		return ret;
+
+	switch (ctrl->id) {
+	case V4L2_CID_VFLIP:
+		val = ctrl->val ? REG04_VFLIP_IMG | REG04_VREF_EN : 0x00;
+		return ov2640_mask_set(client, REG04,
+				       REG04_VFLIP_IMG | REG04_VREF_EN, val);
+		/* NOTE: REG04_VREF_EN: 1 line shift / even/odd line swap */
+	case V4L2_CID_HFLIP:
+		val = ctrl->val ? REG04_HFLIP_IMG : 0x00;
+		return ov2640_mask_set(client, REG04, REG04_HFLIP_IMG, val);
+	case V4L2_CID_TEST_PATTERN:
+		val = ctrl->val ? COM7_COLOR_BAR_TEST : 0x00;
+		return ov2640_mask_set(client, COM7, COM7_COLOR_BAR_TEST, val);
+	}
+
+	return -EINVAL;
 }
 
 #ifdef CONFIG_VIDEO_ADV_DEBUG
 static int ov2640_g_register(struct v4l2_subdev *sd,
 			     struct v4l2_dbg_register *reg)
 {
-//	struct i2c_client *client = v4l2_get_subdevdata(sd);
-//	int ret;
-//
-//	reg->size = 1;
-//	if (reg->reg > 0xff)
-//		return -EINVAL;
-//
-//	ret = i2c_smbus_read_byte_data(client, reg->reg);
-//	if (ret < 0)
-//		return ret;
-//
-//	reg->val = ret;
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+	int ret;
+
+	reg->size = 1;
+	if (reg->reg > 0xff)
+		return -EINVAL;
+
+	ret = i2c_smbus_read_byte_data(client, reg->reg);
+	if (ret < 0)
+		return ret;
+
+	reg->val = ret;
 
 	return 0;
 }
@@ -775,28 +774,27 @@ static int ov2640_g_register(struct v4l2_subdev *sd,
 static int ov2640_s_register(struct v4l2_subdev *sd,
 			     const struct v4l2_dbg_register *reg)
 {
-//	struct i2c_client *client = v4l2_get_subdevdata(sd);
-//
-//	if (reg->reg > 0xff ||
-//	    reg->val > 0xff)
-//		return -EINVAL;
-//
-//	return i2c_smbus_write_byte_data(client, reg->reg, reg->val);
-return 0;
+	struct i2c_client *client = v4l2_get_subdevdata(sd);
+
+	if (reg->reg > 0xff ||
+	    reg->val > 0xff)
+		return -EINVAL;
+
+	return i2c_smbus_write_byte_data(client, reg->reg, reg->val);
 }
 #endif
 
 static void ov2640_set_power(struct ov2640_priv *priv, int on)
 {
 #ifdef CONFIG_GPIOLIB
-//	if (priv->pwdn_gpio)
-//		gpiod_direction_output(priv->pwdn_gpio, !on);
-//	if (on && priv->resetb_gpio) {
-//		/* Active the resetb pin to perform a reset pulse */
-//		gpiod_direction_output(priv->resetb_gpio, 1);
-//		usleep_range(3000, 5000);
-//		gpiod_set_value(priv->resetb_gpio, 0);
-//	}
+	if (priv->pwdn_gpio)
+		gpiod_direction_output(priv->pwdn_gpio, !on);
+	if (on && priv->resetb_gpio) {
+		/* Active the resetb pin to perform a reset pulse */
+		gpiod_direction_output(priv->resetb_gpio, 1);
+		usleep_range(3000, 5000);
+		gpiod_set_value(priv->resetb_gpio, 0);
+	}
 #endif
 }
 
@@ -837,42 +835,42 @@ static const struct ov2640_win_size *ov2640_select_win(u32 width, u32 height)
 static int ov2640_set_params(struct i2c_client *client,
 			     const struct ov2640_win_size *win, u32 code)
 {
-	const struct regval_list *selected_cfmt_regs;
+//	const struct regval_list *selected_cfmt_regs;
 	u8 val;
 	int ret;
-
-	switch (code) {
-	case MEDIA_BUS_FMT_RGB565_2X8_BE:
-		dev_dbg(&client->dev, "%s: Selected cfmt RGB565 BE", __func__);
-		selected_cfmt_regs = ov2640_rgb565_be_regs;
-		break;
-	case MEDIA_BUS_FMT_RGB565_2X8_LE:
-		dev_dbg(&client->dev, "%s: Selected cfmt RGB565 LE", __func__);
-		selected_cfmt_regs = ov2640_rgb565_le_regs;
-		break;
-	case MEDIA_BUS_FMT_YUYV8_2X8:
-		dev_dbg(&client->dev, "%s: Selected cfmt YUYV (YUV422)", __func__);
-		selected_cfmt_regs = ov2640_yuyv_regs;
-		break;
-	case MEDIA_BUS_FMT_UYVY8_2X8:
-	default:
-		dev_dbg(&client->dev, "%s: Selected cfmt UYVY", __func__);
-		selected_cfmt_regs = ov2640_uyvy_regs;
-		break;
-	case MEDIA_BUS_FMT_YVYU8_2X8:
-		dev_dbg(&client->dev, "%s: Selected cfmt YVYU", __func__);
-		selected_cfmt_regs = ov2640_yuyv_regs;
-		break;
-	case MEDIA_BUS_FMT_VYUY8_2X8:
-		dev_dbg(&client->dev, "%s: Selected cfmt VYUY", __func__);
-		selected_cfmt_regs = ov2640_uyvy_regs;
-		break;
-	}
-
-	/* reset hardware */
-	ov2640_reset(client);
-
-	/* initialize the sensor with default data */
+//
+//	switch (code) {
+//	case MEDIA_BUS_FMT_RGB565_2X8_BE:
+//		dev_dbg(&client->dev, "%s: Selected cfmt RGB565 BE", __func__);
+//		selected_cfmt_regs = ov2640_rgb565_be_regs;
+//		break;
+//	case MEDIA_BUS_FMT_RGB565_2X8_LE:
+//		dev_dbg(&client->dev, "%s: Selected cfmt RGB565 LE", __func__);
+//		selected_cfmt_regs = ov2640_rgb565_le_regs;
+//		break;
+//	case MEDIA_BUS_FMT_YUYV8_2X8:
+//		dev_dbg(&client->dev, "%s: Selected cfmt YUYV (YUV422)", __func__);
+//		selected_cfmt_regs = ov2640_yuyv_regs;
+//		break;
+//	case MEDIA_BUS_FMT_UYVY8_2X8:
+//	default:
+//		dev_dbg(&client->dev, "%s: Selected cfmt UYVY", __func__);
+//		selected_cfmt_regs = ov2640_uyvy_regs;
+//		break;
+//	case MEDIA_BUS_FMT_YVYU8_2X8:
+//		dev_dbg(&client->dev, "%s: Selected cfmt YVYU", __func__);
+//		selected_cfmt_regs = ov2640_yuyv_regs;
+//		break;
+//	case MEDIA_BUS_FMT_VYUY8_2X8:
+//		dev_dbg(&client->dev, "%s: Selected cfmt VYUY", __func__);
+//		selected_cfmt_regs = ov2640_uyvy_regs;
+//		break;
+//	}
+//
+//	/* reset hardware */
+//	ov2640_reset(client);
+//
+//	/* initialize the sensor with default data */
 //	dev_dbg(&client->dev, "%s: Init default", __func__);
 //	ret = ov2640_write_array(client, ov2640_init_regs);
 //	if (ret < 0)
@@ -960,51 +958,50 @@ static int ov2640_set_fmt(struct v4l2_subdev *sd,
 	if (format->pad)
 		return -EINVAL;
 
-    return 0;
-//	mutex_lock(&priv->lock);
-//
-//	/* select suitable win */
-//	win = ov2640_select_win(mf->width, mf->height);
-//	mf->width	= win->width;
-//	mf->height	= win->height;
-//
-//	mf->field	= V4L2_FIELD_NONE;
-//	mf->colorspace	= V4L2_COLORSPACE_SRGB;
-//	mf->ycbcr_enc	= V4L2_YCBCR_ENC_DEFAULT;
-//	mf->quantization = V4L2_QUANTIZATION_DEFAULT;
-//	mf->xfer_func	= V4L2_XFER_FUNC_DEFAULT;
-//
-//	switch (mf->code) {
-//	case MEDIA_BUS_FMT_RGB565_2X8_BE:
-//	case MEDIA_BUS_FMT_RGB565_2X8_LE:
-//	case MEDIA_BUS_FMT_YUYV8_2X8:
-//	case MEDIA_BUS_FMT_UYVY8_2X8:
-//	case MEDIA_BUS_FMT_YVYU8_2X8:
-//	case MEDIA_BUS_FMT_VYUY8_2X8:
-//		break;
-//	default:
-//		mf->code = MEDIA_BUS_FMT_UYVY8_2X8;
-//		break;
-//	}
-//
-//	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
-//		struct ov2640_priv *priv = to_ov2640(client);
-//
-//		if (priv->streaming) {
-//			ret = -EBUSY;
-//			goto out;
-//		}
-//		/* select win */
-//		priv->win = win;
-//		/* select format */
-//		priv->cfmt_code = mf->code;
-//	} else {
-//		cfg->try_fmt = *mf;
-//	}
-//out:
-//	mutex_unlock(&priv->lock);
-//
-//	return ret;
+	mutex_lock(&priv->lock);
+
+	/* select suitable win */
+	win = ov2640_select_win(mf->width, mf->height);
+	mf->width	= win->width;
+	mf->height	= win->height;
+
+	mf->field	= V4L2_FIELD_NONE;
+	mf->colorspace	= V4L2_COLORSPACE_SRGB;
+	mf->ycbcr_enc	= V4L2_YCBCR_ENC_DEFAULT;
+	mf->quantization = V4L2_QUANTIZATION_DEFAULT;
+	mf->xfer_func	= V4L2_XFER_FUNC_DEFAULT;
+
+	switch (mf->code) {
+	case MEDIA_BUS_FMT_RGB565_2X8_BE:
+	case MEDIA_BUS_FMT_RGB565_2X8_LE:
+	case MEDIA_BUS_FMT_YUYV8_2X8:
+	case MEDIA_BUS_FMT_UYVY8_2X8:
+	case MEDIA_BUS_FMT_YVYU8_2X8:
+	case MEDIA_BUS_FMT_VYUY8_2X8:
+		break;
+	default:
+		mf->code = MEDIA_BUS_FMT_UYVY8_2X8;
+		break;
+	}
+
+	if (format->which == V4L2_SUBDEV_FORMAT_ACTIVE) {
+		struct ov2640_priv *priv = to_ov2640(client);
+
+		if (priv->streaming) {
+			ret = -EBUSY;
+			goto out;
+		}
+		/* select win */
+		priv->win = win;
+		/* select format */
+		priv->cfmt_code = mf->code;
+	} else {
+		cfg->try_fmt = *mf;
+	}
+out:
+	mutex_unlock(&priv->lock);
+
+	return ret;
 }
 
 static int ov2640_init_cfg(struct v4l2_subdev *sd,
@@ -1161,35 +1158,35 @@ static const struct v4l2_subdev_ops ov2640_subdev_ops = {
 static int ov2640_probe_dt(struct i2c_client *client,
 		struct ov2640_priv *priv)
 {
-//	int ret;
+	int ret;
 
 	/* Request the reset GPIO deasserted */
-//	priv->resetb_gpio = devm_gpiod_get_optional(&client->dev, "resetb",
-//			GPIOD_OUT_LOW);
-//
-//	if (!priv->resetb_gpio)
-//		dev_dbg(&client->dev, "resetb gpio is not assigned!\n");
-//
-//	ret = PTR_ERR_OR_ZERO(priv->resetb_gpio);
-//	if (ret && ret != -ENOSYS) {
-//		dev_dbg(&client->dev,
-//			"Error %d while getting resetb gpio\n", ret);
-//		return ret;
-//	}
-//
-//	/* Request the power down GPIO asserted */
-//	priv->pwdn_gpio = devm_gpiod_get_optional(&client->dev, "pwdn",
-//			GPIOD_OUT_HIGH);
-//
-//	if (!priv->pwdn_gpio)
-//		dev_dbg(&client->dev, "pwdn gpio is not assigned!\n");
-//
-//	ret = PTR_ERR_OR_ZERO(priv->pwdn_gpio);
-//	if (ret && ret != -ENOSYS) {
-//		dev_dbg(&client->dev,
-//			"Error %d while getting pwdn gpio\n", ret);
-//		return ret;
-//	}
+	priv->resetb_gpio = devm_gpiod_get_optional(&client->dev, "resetb",
+			GPIOD_OUT_LOW);
+
+	if (!priv->resetb_gpio)
+		dev_dbg(&client->dev, "resetb gpio is not assigned!\n");
+
+	ret = PTR_ERR_OR_ZERO(priv->resetb_gpio);
+	if (ret && ret != -ENOSYS) {
+		dev_dbg(&client->dev,
+			"Error %d while getting resetb gpio\n", ret);
+		return ret;
+	}
+
+	/* Request the power down GPIO asserted */
+	priv->pwdn_gpio = devm_gpiod_get_optional(&client->dev, "pwdn",
+			GPIOD_OUT_HIGH);
+
+	if (!priv->pwdn_gpio)
+		dev_dbg(&client->dev, "pwdn gpio is not assigned!\n");
+
+	ret = PTR_ERR_OR_ZERO(priv->pwdn_gpio);
+	if (ret && ret != -ENOSYS) {
+		dev_dbg(&client->dev,
+			"Error %d while getting pwdn gpio\n", ret);
+		return ret;
+	}
 
 	return 0;
 }

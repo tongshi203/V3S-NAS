@@ -19,7 +19,7 @@
 
 /* This is got from BSP sources. */
 #define MIN_WIDTH	(32)
-#define MIN_HEIGHT	(32)
+#define MIN_HEIGHT	(1)
 #define MAX_WIDTH	(4800)
 #define MAX_HEIGHT	(4800)
 
@@ -356,8 +356,10 @@ static int sun6i_video_try_fmt(struct sun6i_video *video,
 	if (!is_pixformat_valid(pixfmt->pixelformat))
 		pixfmt->pixelformat = supported_pixformats[0];
 
+//	v4l_bound_align_image(&pixfmt->width, MIN_WIDTH, MAX_WIDTH, 1,
+//			      &pixfmt->height, MIN_HEIGHT, MAX_WIDTH, 1, 1);
 	v4l_bound_align_image(&pixfmt->width, MIN_WIDTH, MAX_WIDTH, 1,
-			      &pixfmt->height, MIN_HEIGHT, MAX_WIDTH, 1, 1);
+			      &pixfmt->height, MIN_HEIGHT, MAX_WIDTH, 0, 0);
 
 	bpp = sun6i_csi_get_bpp(pixfmt->pixelformat);
 	pixfmt->bytesperline = (pixfmt->width * bpp) >> 3;
@@ -564,15 +566,18 @@ static int sun6i_video_link_validate(struct media_link *link)
 	if (ret < 0)
 		return ret;
 
-	if (!sun6i_csi_is_format_supported(video->csi,
-					   video->fmt.fmt.pix.pixelformat,
-					   source_fmt.format.code)) {
-		dev_err(video->csi->dev,
-			"Unsupported pixformat: 0x%x with mbus code: 0x%x!\n",
-			video->fmt.fmt.pix.pixelformat,
-			source_fmt.format.code);
-		return -EPIPE;
-	}
+//	if (!sun6i_csi_is_format_supported(video->csi,
+//					   video->fmt.fmt.pix.pixelformat,
+//					   source_fmt.format.code)) {
+//		dev_err(video->csi->dev,
+//			"Unsupported pixformat: 0x%x with mbus code: 0x%x!\n",
+//			video->fmt.fmt.pix.pixelformat,
+//			source_fmt.format.code);
+//		return -EPIPE;
+//	}
+    source_fmt.format.code = MEDIA_BUS_FMT_JPEG_1X8;
+    source_fmt.format.width = 188;
+    source_fmt.format.height = 1;
 
 	if (source_fmt.format.width != video->fmt.fmt.pix.width ||
 	    source_fmt.format.height != video->fmt.fmt.pix.height) {

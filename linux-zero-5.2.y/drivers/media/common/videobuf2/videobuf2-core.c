@@ -1473,7 +1473,10 @@ static int vb2_start_streaming(struct vb2_queue *q)
 	ret = call_qop(q, start_streaming, q,
 		       atomic_read(&q->owned_by_drv_count));
 	if (!ret)
-		return 0;
+    {
+        return 0;
+    }
+
 
 	q->start_streaming_called = 0;
 
