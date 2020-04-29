@@ -1,0 +1,130 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: TSIPREC2 - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"E:\work\tsiprec2\Debug/TSIPREC2.res" /d "_DEBUG" "F:\CYJ\DVB\TSIPRec2\TSIPREC2.rc"" 
+Creating temporary file "y:\temp\RSP5F.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_MBCS" /D "_USRDLL" /D FD_SETSIZE=128 /Fp"E:\work\tsiprec2\Debug/TSIPREC2.pch" /Yu"stdafx.h" /Fo"E:\work\tsiprec2\Debug/" /Fd"E:\work\tsiprec2\Debug/" /FD /GZ /c 
+"F:\CYJ\DVB\TSIPRec2\BaseFileCombiner.cpp"
+"F:\CYJ\DVB\TSIPRec2\BitArrayObject.cpp"
+"F:\CYJ\DVB\TSIPRec2\DecoderThread.cpp"
+"F:\CYJ\DVB\TSIPRec2\DirectroyHelp.cpp"
+"F:\CYJ\DVB\TSIPRec2\DVBEPGReceiver.cpp"
+"F:\CYJ\DVB\TSIPRec2\DVBFileReceiver.cpp"
+"F:\CYJ\DVB\TSIPRec2\FileDelayEventDispatcher.cpp"
+"F:\CYJ\DVB\TSIPRec2\FileObject.cpp"
+"F:\CYJ\DVB\TSIPRec2\FileUpdate.cpp"
+"F:\CYJ\DVB\TSIPRec2\FileWriterThread.cpp"
+"F:\CYJ\DVB\TSIPRec2\HugeFile.cpp"
+"F:\CYJ\DVB\TSIPRec2\IPEncryptKeyMgrImpl.cpp"
+"F:\CYJ\DVB\TSIPRec2\IPFileMendHelper.cpp"
+"F:\CYJ\DVB\TSIPRec2\IPRDrvAPI.cpp"
+"F:\CYJ\DVB\TSIPRec2\IPUnlockDrvMgr.cpp"
+"F:\CYJ\DVB\TSIPRec2\IPUnlockDrvWrapper.cpp"
+"F:\CYJ\DVB\TSIPRec2\LicDecode.cpp"
+"F:\CYJ\DVB\TSIPRec2\Lzhuf.cpp"
+"F:\CYJ\DVB\TSIPRec2\MB_OneFile.cpp"
+"F:\CYJ\DVB\TSIPRec2\TSDB_Rec.cpp"
+"F:\CYJ\DVB\TSIPRec2\TSDBFileSystem.cpp"
+"F:\CYJ\DVB\TSIPRec2\TSDBHugeFileObj.cpp"
+"F:\CYJ\DVB\TSIPRec2\TSIPREC2.cpp"
+"F:\CYJ\DVB\TSIPRec2\UDPDataPortLinux.cpp"
+"F:\CYJ\DVB\TSIPRec2\UDPRecThread.cpp"
+"F:\CYJ\DVB\TSIPRec2\UnCmpMgr.cpp"
+"F:\CYJ\DVB\TSIPRec2\UnCompressObj.cpp"
+"F:\CYJ\DVB\TSIPRec2\unlzss32.cpp"
+]
+Creating command line "xicl6.exe @y:\temp\RSP5F.tmp" 
+Creating temporary file "y:\temp\RSP60.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_WINDLL" /D "_MBCS" /D "_USRDLL" /D FD_SETSIZE=128 /Fp"E:\work\tsiprec2\Debug/TSIPREC2.pch" /Yc"stdafx.h" /Fo"E:\work\tsiprec2\Debug/" /Fd"E:\work\tsiprec2\Debug/" /FD /GZ /c 
+"F:\CYJ\DVB\TSIPRec2\StdAfx.cpp"
+]
+Creating command line "xicl6.exe @y:\temp\RSP60.tmp" 
+Creating temporary file "y:\temp\RSP61.tmp" with contents
+[
+Ws2_32.lib /nologo /subsystem:windows /dll /incremental:yes /pdb:"E:\work\tsiprec2\TSIPREC2.pdb" /debug /machine:I386 /def:".\TSIPREC2.def" /out:"E:\work\tsiprec2\TSIPREC2.dll" /implib:"E:\work\tsiprec2\TSIPREC2.lib" /pdbtype:sept 
+E:\work\tsiprec2\Debug\BaseFileCombiner.obj
+E:\work\tsiprec2\Debug\BitArrayObject.obj
+E:\work\tsiprec2\Debug\DecoderThread.obj
+E:\work\tsiprec2\Debug\DirectroyHelp.obj
+E:\work\tsiprec2\Debug\DVBEPGReceiver.obj
+E:\work\tsiprec2\Debug\DVBFileReceiver.obj
+E:\work\tsiprec2\Debug\FileDelayEventDispatcher.obj
+E:\work\tsiprec2\Debug\FileObject.obj
+E:\work\tsiprec2\Debug\FileUpdate.obj
+E:\work\tsiprec2\Debug\FileWriterThread.obj
+E:\work\tsiprec2\Debug\HugeFile.obj
+E:\work\tsiprec2\Debug\IPEncryptKeyMgrImpl.obj
+E:\work\tsiprec2\Debug\IPFileMendHelper.obj
+E:\work\tsiprec2\Debug\IPRDrvAPI.obj
+E:\work\tsiprec2\Debug\IPUnlockDrvMgr.obj
+E:\work\tsiprec2\Debug\IPUnlockDrvWrapper.obj
+E:\work\tsiprec2\Debug\LicDecode.obj
+E:\work\tsiprec2\Debug\Lzhuf.obj
+E:\work\tsiprec2\Debug\MB_OneFile.obj
+E:\work\tsiprec2\Debug\StdAfx.obj
+E:\work\tsiprec2\Debug\TSDB_Rec.obj
+E:\work\tsiprec2\Debug\TSDBFileSystem.obj
+E:\work\tsiprec2\Debug\TSDBHugeFileObj.obj
+E:\work\tsiprec2\Debug\TSIPREC2.obj
+E:\work\tsiprec2\Debug\UDPDataPortLinux.obj
+E:\work\tsiprec2\Debug\UDPRecThread.obj
+E:\work\tsiprec2\Debug\UnCmpMgr.obj
+E:\work\tsiprec2\Debug\UnCompressObj.obj
+E:\work\tsiprec2\Debug\unlzss32.obj
+E:\work\tsiprec2\Debug\TSIPREC2.res
+]
+Creating command line "xilink6.exe @y:\temp\RSP61.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+BaseFileCombiner.cpp
+BitArrayObject.cpp
+DecoderThread.cpp
+DirectroyHelp.cpp
+DVBEPGReceiver.cpp
+DVBFileReceiver.cpp
+FileDelayEventDispatcher.cpp
+FileObject.cpp
+FileUpdate.cpp
+FileWriterThread.cpp
+HugeFile.cpp
+IPEncryptKeyMgrImpl.cpp
+IPFileMendHelper.cpp
+IPRDrvAPI.cpp
+IPUnlockDrvMgr.cpp
+IPUnlockDrvWrapper.cpp
+LicDecode.cpp
+Lzhuf.cpp
+MB_OneFile.cpp
+TSDB_Rec.cpp
+Generating Code...
+Compiling...
+TSDBFileSystem.cpp
+TSDBHugeFileObj.cpp
+TSIPREC2.cpp
+UDPDataPortLinux.cpp
+UDPRecThread.cpp
+UnCmpMgr.cpp
+UnCompressObj.cpp
+unlzss32.cpp
+Generating Code...
+Linking...
+xilink6: executing 'C:\PROGRA~1\MICROS~2\VC98\Bin\link.exe'
+   Creating library E:\work\tsiprec2\TSIPREC2.lib and object E:\work\tsiprec2\TSIPREC2.exp
+
+
+
+<h3>Results</h3>
+TSIPREC2.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

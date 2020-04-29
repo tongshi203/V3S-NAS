@@ -1,0 +1,12 @@
+; TSIPREC2.def : Declares the module parameters for the DLL.
+
+LIBRARY      "TSIPREC2"
+DESCRIPTION  'TSIPREC2 Windows Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+	CreateDVBFileReceiver @ 10
+	Create_DVB_EPG_Receiver @ 11
+
+	IPRD_Init @ 20
+	IPRD_Close @ 21
