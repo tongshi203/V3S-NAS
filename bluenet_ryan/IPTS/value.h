@@ -1,0 +1,54 @@
+#ifndef __VALUE_H_20190703__
+#define __VALUE_H_20190703__
+
+typedef unsigned char   BYTE;
+typedef unsigned char*  PBYTE;
+typedef unsigned long   ULONG;
+typedef unsigned int    UINT;
+typedef unsigned short  WORD;
+typedef unsigned int    DWORD;
+typedef DWORD *         PDWORD;
+
+#define TS_PACKET_LEN 188
+#define INVALID_PID			0x1FFF
+
+typedef enum
+{
+    DVBPSI_TBLID_PAT = 0,
+    DVBPSI_TBLID_CA,
+    DVBPSI_TBLID_PMT,
+    DVBPSI_TBLID_DATABROCAST_MPE = 0x3E,		// private data
+    DVBPSI_TBLID_NIT = 0x40,
+    DVBPSI_TBLID_NIT_OTHER,					// 2010.4.7 Other network
+    DVBPSI_TBLID_SDT_ACTUAL = 0x42,
+    DVBPSI_TBLID_SDT_OTHER = 0x46,
+    DVBPSI_TBLID_BAT = 0x4A,
+    DVBPSI_TBLID_EIT_ACTUAL = 0x4E,
+    DVBPSI_TBLID_EIT_OTHER,
+    DVBPSI_TBLID_EIT_ACTUAL_SCHEDULE_START,
+    DVBPSI_TBLID_EIT_ACTUAL_SCHEDULE_END = 0x5F,
+    DVBPSI_TBLID_EIT_OTHER_SCHEDULE_START,
+    DVBPSI_TBLID_EIT_OTHER_SCHEDULE_END = 0x6F,
+
+    DVBPSI_TBLID_TDT = 0x70,
+    DVBPSI_TBLID_TOT = 0x73,
+
+    DVBPSI_TBLID_PROGRAM_LIST_TABLE = 0x80,
+    DVBPSI_TBLID_PROGRAM_INTRODUCTION_TABLE,
+    DVBPSI_TBLID_PROGRAM_REMOTE_CONTROL_TABLE,
+    DVBPSI_TBLID_TONGSHI_VOD_IDENTITY,
+
+    DVBPSI_TBLID_RESERVED = 0xFF
+}DVB_PSI_TABLE_ID;
+
+#ifndef SWAP_DWORD
+#define SWAP_DWORD( a )		( DWORD((a&0xFF000000)>>24)|DWORD((a&0xFF0000)>>8)|DWORD((a&0xFF00)<<8)|DWORD((a&0xFF)<<24 ) )
+#endif
+#ifndef SWAP_THREE_BYTE
+#define SWAP_THREE_BYTE( a )	( DWORD((a&0xFFFF00)>>16) | DWORD(a&0xFF00) ) | DWORD((a&0xFF)<<16)
+#endif
+#ifndef SWAP_WORD
+#define SWAP_WORD( a )		( WORD((a&0xFF00)>>8) | WORD((a&0xFF)<<8) )
+#endif
+#endif // __VALUE_H_20190703__
+

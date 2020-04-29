@@ -1,0 +1,5 @@
+[Batch Build]
+libx264 - Win32 Debug=1
+libx264 - Win32 Release=1
+libx264 - Win32 StaticDebug=1
+libx264 - Win32 StaticRelease=1

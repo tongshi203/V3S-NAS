@@ -1,0 +1,137 @@
+
+- JASPERLIB - 
+
+-------------------------
+    Buffer Management
+-------------------------
+
+Types:
+
+* Buffer
+	typedef unsigned char Buffer; 
+
+	Buffer represent a buffer with a reference counter.
+
+* BufferPool
+	typedef struct 
+	{	
+        	unsigned long *start_address;
+	        int buffers_size;
+        	int nb_buffers;
+	        Buffer *B;  // this is an array of Buffer
+	} BufferPool;
+
+	The BufferPool struct represent a collection of Buffers of the
+	same size.
+	B is an array of the Buffer struct representing those buffers.
+
+Functions:
+
+* void addref_buffer(Buffer *B)
+	
+	addref the Buffer pointed by B
+
+* void release_buffer(Buffer *B)
+	
+	release the Buffer pointed by B
+
+* void init_buffer_pool(BufferPool *pBP, unsigned long *start_address,
+                      int buffers_size, int nb_buffers);
+
+	Initialize a buffer pool containing nb_buffers buffers of size
+	buffers_size. A buffer pool is a contiguous zone in memory
+	used for data buffers. start_address should point to a zone of
+	size buffers_size * nb_buffers.
+
+* void deinit_buffer_pool(BufferPool *pBP);
+	
+	Free the allocated by init_buffer_pool.
+
+* int find_free_buffer(BufferPool *pBP);
+
+	Find a free (refcount==0) buffer in the BufferPool.
+	Two consecutive calls to find_free_buffer may return the same
+	buffer, if the buffer was not addrefed bewtween the calls.
+	The value returned is the index of the buffer in the
+	bufferpool buffer table, or -1 if there's no free buffer.
+
+* unsigned long *get_buffer_address(BufferPool *pBP, int idx)
+
+	Get the adress of the idxth buffer in the BufferPool pointed by pBP.
+
+
+--------------------------
+    Packets Management
+--------------------------
+
+Types:
+* feedpacket
+	typedef struct tag_feedpacket{
+        	struct tag_feedpacket *pNext;
+	        int streamID;
+        	unsigned int flags;
+	        my_MPEG_WRITE_DATA packet;
+	} feedpacket;
+
+	pNext : next packet in Q.
+        streamID: ID of the stream (AUDIO, VIDEO, SPU)
+        flags: ???
+        packet: the hwlib packet itself.
+
+* FeedPacketQ
+	typedef struct {
+        	feedpacket *pFirstPacket;
+	        feedpacket *pLastPacket;
+	#ifdef QUEUES_STAT
+	        int nb;
+        	int nb_in;
+	        int nb_out;
+        	int nb_flush;	
+	#endif
+	} FeedPacketQ;
+
+Constants:
+	FeedPacketQ *pFreeQ
+		Queue for Free feedpackets
+
+	FeedPacketQ *pVideoQ
+	FeedPacketQ *pAudioQ
+	FeedPacketQ *pSpuQ
+		Queues for Video, Audio and Subpicture feedpackets
+
+	Note: These constants are actually macros.
+
+Functions:
+
+* void FeedPacketQueuesInit(feedpacket *packets, int nbpackets);
+
+	Init the packet queues.
+	packets is an array of nbpackets feedpacket. This function
+	fill up the FreeQ with the packets in the packets
+	array. Should be called before any call to getFreeFeedPacket
+	or nextPacket, but after RUA_DECODER_RESET which empty all the
+	queues.
+	
+* feedpacket *getFreeFeedPacket(void);
+
+	Get the first packet from the FreeQ. Doesnt remove the packet
+	from the Q, so two consecutive call to this function return
+	the same packet.
+
+* void nextPacket(FeedPacketQ *pQ);
+
+	Get the first packet in the FreeQ and queues it in the queue
+	pointed by pQ (usually pAudioQ, pVideoQ or pSpuQ). The
+	streamID of the queued packet should match the queue in which
+	it is queued.
+
+----------------
+    Examples 
+----------------
+
+playm2v:
+	Play a m2v file (mpeg video)
+
+playcd:
+	Play an audio cd
+

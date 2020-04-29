@@ -1,0 +1,391 @@
+     1                                  ;
+     2                                  ;
+     3                                  ; 	assembler routines to detect CPU-features
+     4                                  ;
+     5                                  ;	MMX / 3DNow! / SSE / SSE2
+     6                                  ;
+     7                                  ;	for the LAME project
+     8                                  ;	Frank Klemm, Robert Hegemann 2000-10-12
+     9                                  ;
+    10                                  
+    11                                  %include "nasm.h"
+    12                              <1> 
+    13                              <1> ;	Copyright (C) 1999 URURI
+    14                              <1> 
+    15                              <1> ;	nasm�ѥޥ���
+    16                              <1> ;	1999/08/21 ���
+    17                              <1> ;	1999/10/10 ���Ĥ��ɲ�
+    18                              <1> ;	1999/10/27 aout�б�
+    19                              <1> ;	1999/11/07 pushf, popf ��NASM�ΥХ��б�
+    20                              <1> ;	1999/12/02 for BCC ( Thanks to Miquel )
+    21                              <1> 
+    22                              <1> ; for Windows Visual C++        -> define WIN32
+    23                              <1> ;             Borland or cygwin ->        WIN32 and COFF
+    24                              <1> ; for FreeBSD 2.x               ->        AOUT
+    25                              <1> ; for TownsOS                   ->        __tos__
+    26                              <1> ; otherwise                     ->   none
+    27                              <1> 
+    28                              <1> ;̾����դ���
+    29                              <1> 
+    30                              <1> BITS 32
+    31                              <1> 
+    32                              <1> section .note.GNU-stack noalloc noexec nowrite progbits
+    33                              <1> 
+    34                              <1> %ifdef YASM
+    35                              <1> 	%define segment_code segment .text align=16 use32
+    36                              <1> 	%define segment_data segment .data align=16 use32
+    37                              <1> 	%define segment_bss  segment .bss align=16 use32
+    38                              <1> %elifdef WIN32
+    39                              <1> 	%define segment_code segment .text align=16 class=CODE use32
+    40                              <1> 	%define segment_data segment .data align=16 class=DATA use32
+    41                              <1> %ifdef __BORLANDC__
+    42                              <1> 	%define segment_bss  segment .data align=16 class=DATA use32
+    43                              <1> %else
+    44                              <1> 	%define segment_bss  segment .bss align=16 class=DATA use32
+    45                              <1> %endif
+    46                              <1> %elifdef AOUT
+    47                              <1> 	%define _NAMING
+    48                              <1> 	%define segment_code segment .text
+    49                              <1> 	%define segment_data segment .data
+    50                              <1> 	%define segment_bss  segment .bss
+    51                              <1> %else
+    52                              <1> %ifidn __OUTPUT_FORMAT__,elf
+    53                              <1> 	section .note.GNU-stack progbits noalloc noexec nowrite align=1
+    54                              <1> %endif
+    55                              <1> 	%define segment_code segment .text align=16 class=CODE use32
+    56                              <1> 	%define segment_data segment .data align=16 class=DATA use32
+    57                              <1> 	%define segment_bss  segment .bss align=16 class=DATA use32
+    58                              <1> %endif
+    59                              <1> 
+    60                              <1> %ifdef WIN32
+    61                              <1> 	%define _NAMING
+    62                              <1> %endif
+    63                              <1> 
+    64                              <1> %ifdef __tos__
+    65                              <1> group CGROUP text
+    66                              <1> group DGROUP data
+    67                              <1> %endif
+    68                              <1> 
+    69                              <1> ;ñ�����ư��������
+    70                              <1> 
+    71                              <1> %idefine float dword
+    72                              <1> %idefine fsize 4
+    73                              <1> %idefine fsizen(a) (fsize*(a))
+    74                              <1> 
+    75                              <1> ;��ɷ��
+    76                              <1> 
+    77                              <1> %idefine wsize 2
+    78                              <1> %idefine wsizen(a) (wsize*(a))
+    79                              <1> %idefine dwsize 4
+    80                              <1> %idefine dwsizen(a) (dwsize*(a))
+    81                              <1> 
+    82                              <1> ;REG
+    83                              <1> 
+    84                              <1> %define r0 eax
+    85                              <1> %define r1 ebx
+    86                              <1> %define r2 ecx
+    87                              <1> %define r3 edx
+    88                              <1> %define r4 esi
+    89                              <1> %define r5 edi
+    90                              <1> %define r6 ebp
+    91                              <1> %define r7 esp
+    92                              <1> 
+    93                              <1> ;MMX,3DNow!,SSE
+    94                              <1> 
+    95                              <1> %define pmov	movq
+    96                              <1> %define pmovd	movd
+    97                              <1> 
+    98                              <1> %define pupldq	punpckldq
+    99                              <1> %define puphdq	punpckhdq
+   100                              <1> %define puplwd	punpcklwd
+   101                              <1> %define puphwd	punpckhwd
+   102                              <1> 
+   103                              <1> %define xm0 xmm0
+   104                              <1> %define xm1 xmm1
+   105                              <1> %define xm2 xmm2
+   106                              <1> %define xm3 xmm3
+   107                              <1> %define xm4 xmm4
+   108                              <1> %define xm5 xmm5
+   109                              <1> %define xm6 xmm6
+   110                              <1> %define xm7 xmm7
+   111                              <1> 
+   112                              <1> ;�����åե��Ѥ�4�ʥޥ���
+   113                              <1> 
+   114                              <1> %define R4(a,b,c,d) (a*64+b*16+c*4+d)
+   115                              <1> 
+   116                              <1> ;C�饤���ʴʰץޥ���
+   117                              <1> 
+   118                              <1> %imacro globaldef 1
+   119                              <1> 	%ifdef _NAMING
+   120                              <1> 		%define %1 _%1
+   121                              <1> 	%endif
+   122                              <1> 	global %1
+   123                              <1> %endmacro
+   124                              <1> 
+   125                              <1> %imacro externdef 1
+   126                              <1> 	%ifdef _NAMING
+   127                              <1> 		%define %1 _%1
+   128                              <1> 	%endif
+   129                              <1> 	extern %1
+   130                              <1> %endmacro
+   131                              <1> 
+   132                              <1> %imacro proc 1
+   133                              <1> 	%push	proc
+   134                              <1> 	%ifdef _NAMING
+   135                              <1> 		global _%1
+   136                              <1> 	%else
+   137                              <1> 		global %1
+   138                              <1> 	%endif
+   139                              <1> 
+   140                              <1> 	align 32
+   141                              <1> %1:
+   142                              <1> _%1:
+   143                              <1> 
+   144                              <1> 	%assign %$STACK 0
+   145                              <1> 	%assign %$STACKN 0
+   146                              <1> 	%assign %$ARG 4
+   147                              <1> %endmacro
+   148                              <1> 
+   149                              <1> %imacro endproc 0
+   150                              <1> 	%ifnctx proc
+   151                              <1> 		%error expected 'proc' before 'endproc'.
+   152                              <1> 	%else
+   153                              <1> 		%if %$STACK > 0
+   154                              <1> 			add esp, %$STACK
+   155                              <1> 		%endif
+   156                              <1> 
+   157                              <1> 		%if %$STACK <> (-%$STACKN)
+   158                              <1> 			%error STACKLEVEL mismatch check 'local', 'alloc', 'pushd', 'popd'
+   159                              <1> 		%endif
+   160                              <1> 
+   161                              <1> 		ret
+   162                              <1> 		%pop
+   163                              <1> 	%endif
+   164                              <1> %endmacro
+   165                              <1> 
+   166                              <1> %idefine sp(a) esp+%$STACK+a
+   167                              <1> 
+   168                              <1> %imacro arg 1
+   169                              <1> 	%00	equ %$ARG
+   170                              <1> 	%assign %$ARG %$ARG+%1
+   171                              <1> %endmacro
+   172                              <1> 
+   173                              <1> %imacro local 1
+   174                              <1> 	%assign %$STACKN %$STACKN-%1
+   175                              <1> 	%00 equ %$STACKN
+   176                              <1> %endmacro
+   177                              <1> 
+   178                              <1> %imacro alloc 0
+   179                              <1> 	sub esp, (-%$STACKN)-%$STACK
+   180                              <1> 	%assign %$STACK (-%$STACKN)
+   181                              <1> %endmacro
+   182                              <1> 
+   183                              <1> %imacro pushd 1-*
+   184                              <1> 	%rep %0
+   185                              <1> 		push %1
+   186                              <1> 		%assign %$STACK %$STACK+4
+   187                              <1> 	%rotate 1
+   188                              <1> 	%endrep
+   189                              <1> %endmacro
+   190                              <1> 
+   191                              <1> %imacro popd 1-*
+   192                              <1> 	%rep %0
+   193                              <1> 	%rotate -1
+   194                              <1> 		pop %1
+   195                              <1> 		%assign %$STACK %$STACK-4
+   196                              <1> 	%endrep
+   197                              <1> %endmacro
+   198                              <1> 
+   199                              <1> ; bug of NASM-0.98
+   200                              <1> %define pushf db 0x66, 0x9C
+   201                              <1> %define popf  db 0x66, 0x9D
+   202                              <1> 
+   203                              <1> %define	ge16(n)		((((n) / 16)*0xFFFFFFFF) & 0xFFFFFFFF)
+   204                              <1> %define	ge15(n)		((((n) / 15)*0xFFFFFFFF) & 0xFFFFFFFF)
+   205                              <1> %define	ge14(n)		((((n) / 14)*0xFFFFFFFF) & 0xFFFFFFFF)
+   206                              <1> %define	ge13(n)		((((n) / 13)*0xFFFFFFFF) & 0xFFFFFFFF)
+   207                              <1> %define	ge12(n)		((((n) / 12)*0xFFFFFFFF) & 0xFFFFFFFF)
+   208                              <1> %define	ge11(n)		((((n) / 11)*0xFFFFFFFF) & 0xFFFFFFFF)
+   209                              <1> %define	ge10(n)		((((n) / 10)*0xFFFFFFFF) & 0xFFFFFFFF)
+   210                              <1> %define	ge9(n)		((((n) /  9)*0xFFFFFFFF) & 0xFFFFFFFF)
+   211                              <1> %define	ge8(n)		(ge9(n) | ((((n) /  8)*0xFFFFFFFF) & 0xFFFFFFFF))
+   212                              <1> %define	ge7(n)		(ge9(n) | ((((n) /  7)*0xFFFFFFFF) & 0xFFFFFFFF))
+   213                              <1> %define	ge6(n)		(ge9(n) | ((((n) /  6)*0xFFFFFFFF) & 0xFFFFFFFF))
+   214                              <1> %define	ge5(n)		(ge9(n) | ((((n) /  5)*0xFFFFFFFF) & 0xFFFFFFFF))
+   215                              <1> %define	ge4(n)		(ge5(n) | ((((n) /  4)*0xFFFFFFFF) & 0xFFFFFFFF))
+   216                              <1> %define	ge3(n)		(ge5(n) | ((((n) /  3)*0xFFFFFFFF) & 0xFFFFFFFF))
+   217                              <1> %define	ge2(n)		(ge3(n) | ((((n) /  2)*0xFFFFFFFF) & 0xFFFFFFFF))
+   218                              <1> %define	ge1(n)		(ge2(n) | ((((n) /  1)*0xFFFFFFFF) & 0xFFFFFFFF))
+   219                              <1> 
+   220                              <1> ; macro to align for begining of loop
+   221                              <1> ; %1   does not align if it LE bytes to next alignment 
+   222                              <1> ;      4..16 
+   223                              <1> ;      default is 12
+   224                              <1> 
+   225                              <1> %imacro	loopalignK6	0-1 12 
+   226                              <1> %%here:
+   227                              <1> 	times (($$-%%here) & 15 & ge1(($$-%%here) & 15) & ~ge4(($$-%%here) & 15)) nop
+   228                              <1> 	times (1                & ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) jmp short %%skip
+   229                              <1> 	times (((($$-%%here) & 15)-2) & ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) nop
+   230                              <1> %%skip:
+   231                              <1> %endmacro
+   232                              <1> 
+   233                              <1> %imacro	loopalignK7	0-1 12 
+   234                              <1> %%here:
+   235                              <1> 	times (1 & ge1(($$-%%here) & 15)  & ~ge2(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) nop
+   236                              <1> 	times (1 & ge2(($$-%%here) & 15)  & ~ge3(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Bh,0C0h
+   237                              <1> 	times (1 & ge3(($$-%%here) & 15)  & ~ge4(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,020h
+   238                              <1> 	times (1 & ge4(($$-%%here) & 15)  & ~ge5(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h
+   239                              <1> 	times (1 & ge5(($$-%%here) & 15)  & ~ge6(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h,090h
+   240                              <1> 	times (1 & ge6(($$-%%here) & 15)  & ~ge7(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,080h,0,0,0,0
+   241                              <1> 	times (1 & ge7(($$-%%here) & 15)  & ~ge8(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0
+   242                              <1> 	times (1 & ge8(($$-%%here) & 15)  & ~ge9(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0,90h
+   243                              <1> 	times (1 & ge9(($$-%%here) & 15)  & ~ge10(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,007h,90h,90h,90h,90h,90h,90h,90h
+   244                              <1> 	times (1 & ge10(($$-%%here) & 15) & ~ge11(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,008h,90h,90h,90h,90h,90h,90h,90h,90h
+   245                              <1> 	times (1 & ge11(($$-%%here) & 15) & ~ge12(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,009h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   246                              <1> 	times (1 & ge12(($$-%%here) & 15) & ~ge13(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ah,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   247                              <1> 	times (1 & ge13(($$-%%here) & 15) & ~ge14(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Bh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   248                              <1> 	times (1 & ge14(($$-%%here) & 15) & ~ge15(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ch,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   249                              <1> 	times (1 & ge15(($$-%%here) & 15) & ~ge16(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Dh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   250                              <1> %%skip:
+   251                              <1> %endmacro
+   252                              <1> 
+   253                              <1> %imacro	loopalign	0-1 12 
+   254                              <1> 	loopalignK7 %1
+   255                              <1> %endmacro
+   256                              <1> %define PACK(x,y,z,w)	(x*64+y*16+z*4+w)
+   257                              <1> 
+   258                              <1> %ifidn __OUTPUT_FORMAT__,elf
+   259                              <1> 
+   260                              <1> %idefine PIC_BASE(A) _GLOBAL_OFFSET_TABLE_ + $$ - $ wrt ..gotpc
+   261                              <1> %idefine PIC_EBP_REL(A) ebp + A wrt ..gotoff
+   262                              <1> %macro PIC_OFFSETTABLE 0
+   263                              <1> extern  _GLOBAL_OFFSET_TABLE_
+   264                              <1> get_pc.bp:
+   265                              <1> 	mov ebp, [esp]
+   266                              <1> 	retn
+   267                              <1> %endmacro
+   268                              <1> 
+   269                              <1> %else
+   270                              <1> 
+   271                              <1> %define PIC_BASE(A) (0)
+   272                              <1> %define PIC_EBP_REL(A) (A)
+   273                              <1> %macro PIC_OFFSETTABLE 0
+   274                              <1> get_pc.bp:
+   275                              <1> 	mov ebp, [esp]
+   276                              <1> 	retn
+   277                              <1> %endmacro
+   278                              <1> 
+   279                              <1> %endif
+   280                                  
+   281                                  	globaldef	has_MMX_nasm
+   282                              <1>  %ifdef _NAMING
+   283                              <1>  %define %1 _%1
+   284                              <1>  %endif
+   285                              <1>  global %1
+   286                                  	globaldef	has_3DNow_nasm
+   287                              <1>  %ifdef _NAMING
+   288                              <1>  %define %1 _%1
+   289                              <1>  %endif
+   290                              <1>  global %1
+   291                                  	globaldef	has_SSE_nasm
+   292                              <1>  %ifdef _NAMING
+   293                              <1>  %define %1 _%1
+   294                              <1>  %endif
+   295                              <1>  global %1
+   296                                  	globaldef	has_SSE2_nasm
+   297                              <1>  %ifdef _NAMING
+   298                              <1>  %define %1 _%1
+   299                              <1>  %endif
+   300                              <1>  global %1
+   301                                  
+   302                                          segment_code
+   303                                  
+   304                                  testCPUID:
+   305 00000000 9C                      	pushfd	                        
+   306 00000001 58                      	pop	eax
+   307 00000002 89C1                    	mov	ecx,eax
+   308 00000004 3500002000              	xor	eax,0x200000
+   309 00000009 50                      	push	eax
+   310 0000000A 9D                      	popfd
+   311 0000000B 9C                      	pushfd
+   312 0000000C 58                      	pop	eax
+   313 0000000D 39C8                    	cmp	eax,ecx
+   314 0000000F C3                      	ret
+   315                                  
+   316                                  ;---------------------------------------
+   317                                  ;	int  has_MMX_nasm (void)
+   318                                  ;---------------------------------------
+   319                                  
+   320                                  has_MMX_nasm:
+   321 00000010 60                              pushad
+   322 00000011 E8EAFFFFFF              	call	testCPUID
+   323 00000016 7476                    	jz	return0		; no CPUID command, so no MMX
+   324                                  
+   325 00000018 B801000000              	mov	eax,0x1
+   326 0000001D 0FA2                    	CPUID
+   327 0000001F F7C200008000            	test	edx,0x800000
+   328 00000025 7467                    	jz	return0		; no MMX support
+   329 00000027 E95D000000              	jmp	return1		; MMX support
+   330                                          
+   331                                  ;---------------------------------------
+   332                                  ;	int  has_SSE_nasm (void)
+   333                                  ;---------------------------------------
+   334                                  
+   335                                  has_SSE_nasm:
+   336 0000002C 60                              pushad
+   337 0000002D E8CEFFFFFF              	call	testCPUID
+   338 00000032 745A                    	jz	return0		; no CPUID command, so no SSE
+   339                                          
+   340 00000034 B801000000              	mov	eax,0x1
+   341 00000039 0FA2                    	CPUID
+   342 0000003B F7C200000002            	test	edx,0x02000000
+   343 00000041 744B                    	jz	return0		; no SSE support
+   344 00000043 E941000000              	jmp	return1		; SSE support
+   345                                          
+   346                                  ;---------------------------------------
+   347                                  ;	int  has_SSE2_nasm (void)
+   348                                  ;---------------------------------------
+   349                                  
+   350                                  has_SSE2_nasm:
+   351 00000048 60                              pushad
+   352 00000049 E8B2FFFFFF              	call	testCPUID
+   353 0000004E 743E                    	jz	return0		; no CPUID command, so no SSE2
+   354                                          
+   355 00000050 B801000000              	mov	eax,0x1
+   356 00000055 0FA2                    	CPUID
+   357 00000057 F7C200000004            	test	edx,0x04000000
+   358 0000005D 742F                    	jz	return0		; no SSE2 support
+   359 0000005F E925000000              	jmp	return1		; SSE2 support
+   360                                          
+   361                                  ;---------------------------------------
+   362                                  ;	int  has_3DNow_nasm (void)
+   363                                  ;---------------------------------------
+   364                                  
+   365                                  has_3DNow_nasm:
+   366 00000064 60                              pushad
+   367 00000065 E896FFFFFF              	call	testCPUID
+   368 0000006A 7422                    	jz	return0		; no CPUID command, so no 3DNow!
+   369                                  
+   370 0000006C B800000080              	mov	eax,0x80000000
+   371 00000071 0FA2                    	CPUID
+   372 00000073 3D00000080              	cmp	eax,0x80000000
+   373 00000078 7614                    	jbe	return0		; no extended MSR(1), so no 3DNow!
+   374                                  
+   375 0000007A B801000080              	mov	eax,0x80000001
+   376 0000007F 0FA2                    	CPUID
+   377 00000081 F7C200000080            	test	edx,0x80000000
+   378 00000087 7405                    	jz	return0		; no 3DNow! support
+   379                                  				; 3DNow! support
+   380                                  return1:
+   381 00000089 61                      	popad
+   382 0000008A 31C0                    	xor	eax,eax
+   383 0000008C 40                      	inc	eax
+   384 0000008D C3                      	ret
+   385                                  
+   386                                  return0:
+   387 0000008E 61                      	popad
+   388 0000008F 31C0                    	xor	eax,eax
+   389 00000091 C3                      	ret
+   390                                          
+   391                                          end

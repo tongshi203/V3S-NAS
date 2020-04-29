@@ -1,0 +1,105 @@
+common/mc.o: common/mc.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/clip1.h common/i386/mc.h
+common/predict.o: common/predict.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/clip1.h common/i386/predict.h
+common/pixel.o: common/pixel.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/clip1.h common/i386/pixel.h
+common/macroblock.o: common/macroblock.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/frame.o: common/frame.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/dct.o: common/dct.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/i386/dct.h
+common/cpu.o: common/cpu.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/cabac.o: common/cabac.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/common.o: common/common.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/cpu.h
+common/mdate.o: common/mdate.c common/osdep.h
+common/csp.o: common/csp.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/set.o: common/set.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/quant.o: common/quant.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/i386/quant.h
+encoder/analyse.o: encoder/analyse.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h encoder/macroblock.h common/macroblock.h \
+ encoder/me.h encoder/ratecontrol.h encoder/analyse.h encoder/rdo.c \
+ encoder/cavlc.c common/vlc.h encoder/cabac.c encoder/slicetype.c \
+ common/cpu.h
+encoder/me.o: encoder/me.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h encoder/me.h
+encoder/ratecontrol.o: encoder/ratecontrol.c common/common.h common/osdep.h \
+ x264.h common/bs.h common/set.h common/predict.h common/pixel.h \
+ common/mc.h common/frame.h common/dct.h common/cabac.h common/csp.h \
+ common/quant.h common/macroblock.h common/cpu.h encoder/ratecontrol.h
+encoder/set.o: encoder/set.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h config.h
+encoder/macroblock.o: encoder/macroblock.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h encoder/macroblock.h common/macroblock.h
+encoder/cabac.o: encoder/cabac.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h encoder/macroblock.h common/macroblock.h
+encoder/cavlc.o: encoder/cavlc.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/vlc.h encoder/macroblock.h \
+ common/macroblock.h
+encoder/encoder.o: encoder/encoder.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h common/cpu.h encoder/set.h encoder/analyse.h \
+ encoder/ratecontrol.h encoder/macroblock.h common/macroblock.h
+encoder/eval.o: encoder/eval.c
+common/i386/mc-c.o: common/i386/mc-c.c common/common.h common/osdep.h x264.h \
+ common/bs.h common/set.h common/predict.h common/pixel.h common/mc.h \
+ common/frame.h common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h
+common/i386/predict-c.o: common/i386/predict-c.c common/common.h common/osdep.h \
+ x264.h common/bs.h common/set.h common/predict.h common/pixel.h \
+ common/mc.h common/frame.h common/dct.h common/cabac.h common/csp.h \
+ common/quant.h common/macroblock.h common/clip1.h common/i386/predict.h \
+ common/i386/pixel.h
+./x264.o: x264.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h x264.h muxers.h config.h
+./matroska.o: matroska.c common/osdep.h matroska.h
+./muxers.o: muxers.c common/common.h common/osdep.h x264.h common/bs.h \
+ common/set.h common/predict.h common/pixel.h common/mc.h common/frame.h \
+ common/dct.h common/cabac.h common/csp.h common/quant.h \
+ common/macroblock.h x264.h matroska.h muxers.h config.h

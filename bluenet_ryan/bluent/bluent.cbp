@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="bluent" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/bluent" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/bluent" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="CUDPDataPort.cpp" />
+		<Unit filename="CUDPDataPort.h" />
+		<Unit filename="CV4l2DataPort.cpp" />
+		<Unit filename="CV4l2DataPort.h" />
+		<Unit filename="DVBDSMCC_IP_MPE.cpp" />
+		<Unit filename="DVBDSMCC_IP_MPE.h" />
+		<Unit filename="dvbdescriptorsdefine.h" />
+		<Unit filename="dvbpsitablesdefine.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="mytype.h" />
+		<Unit filename="tspacket.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

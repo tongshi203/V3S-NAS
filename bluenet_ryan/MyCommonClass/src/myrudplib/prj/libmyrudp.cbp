@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libmyrudp" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/libmyrudp" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../src/makefile" />
+		<Unit filename="../src/myrudp_auto_delete_buf.h" />
+		<Unit filename="../src/myrudp_client.cpp" />
+		<Unit filename="../src/myrudp_client.h" />
+		<Unit filename="../src/myrudp_client_drv.h" />
+		<Unit filename="../src/myrudp_cmd_value.h" />
+		<Unit filename="../src/myrudp_con_helper_svr.cpp" />
+		<Unit filename="../src/myrudp_con_helper_svr.h" />
+		<Unit filename="../src/myrudp_dbgprint.cpp" />
+		<Unit filename="../src/myrudp_dbgprint.h" />
+		<Unit filename="../src/myrudp_event.h" />
+		<Unit filename="../src/myrudp_onepeerobj.cpp" />
+		<Unit filename="../src/myrudp_onepeerobj.h" />
+		<Unit filename="../src/myrudp_openssl.cpp" />
+		<Unit filename="../src/myrudp_openssl.h" />
+		<Unit filename="../src/myrudp_openssl_svr_helper.cpp" />
+		<Unit filename="../src/myrudp_openssl_svr_helper.h" />
+		<Unit filename="../src/myrudp_packbuilder.cpp" />
+		<Unit filename="../src/myrudp_packbuilder.h" />
+		<Unit filename="../src/myrudp_packet_mgr.cpp" />
+		<Unit filename="../src/myrudp_packet_mgr.h" />
+		<Unit filename="../src/myrudp_packet_sender.cpp" />
+		<Unit filename="../src/myrudp_packet_sender.h" />
+		<Unit filename="../src/myrudp_peerobj_task.h" />
+		<Unit filename="../src/myrudp_server_drv.h" />
+		<Unit filename="../src/myrudp_socket.cpp" />
+		<Unit filename="../src/myrudp_socket.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

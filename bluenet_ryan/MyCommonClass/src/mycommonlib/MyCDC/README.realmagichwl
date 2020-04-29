@@ -1,0 +1,96 @@
+The kernel module realmagichwl_kernelland.o must be accessed using
+realmagichwl_userland_api.o
+
+Details
+-------
+Its major number is 125, create device node:
+
+mknod /dev/realmagichwl0 c 125 0
+
+**** This version support only 0x8500 ****
+
+The minor must be 0.
+
+OSD frame buffer 
+---------------- 
+
+To enable frame buffer devices you must reserve some physical memory
+on the top of Jasper RAM, this is done when configuring the kernel.
+
+Right now, the OSD framebuffer starts at 0x1780000
+
+- use RUA_OSDFB_SWITCH to activate framebuffer. The framebuffer adress
+is passed back to user mode in the parameter.
+
+Data paths
+----------
+
+In general, transfer of data between userland and kernelland can be
+done two ways:
+
+- mapping: freezing the temporary user_virtual<->physical mapping and
+wait until DMA is over. This requires fine handshakes of
+process/kernel and becomes really unstable if user application is not
+bullet proof.
+
+- copying: safe, that's how most drivers do 
+
+HOWEVER, in 8500 case this is not true anymore (nothing is safe
+anyway, and our application must be bullet-prof anyway) so we NEVER
+copy data, and we dont use DMA buffers. This also means you CANT use
+REVERSE_PCM audio format. (You need to do the swapping in userland)
+
+Decoding. Data is transfered using MWD packet, asynchronously, without
+ever copying data or calling in kernel space.
+
+MWD Packets:
+  	Empty MWD packets are removed from a queue of free packet,
+	filled and put in a queue of used packets by the user
+	application. The kernel take packets from the used queue and
+	send them to the hardware and requeue then in the free queue.
+
+Buffers:
+	Each buffer used to transfert data should have an associated
+	reference counter. Each time you queue a packet for the
+	hardware the reference counter of the associated buffer must
+	be incremented. You must lock the quasar irq when incrementing
+	the reference counter. The reference counter The kernel
+	decrement the reference counter in OSCompleteIo. The
+	pOverlapped argument in the MWD structure must allow the
+	kernel to access the reference counter. Currently pOverlapped
+	is a pointer to the reference counter.
+
+Queues:
+	Packet queues are a critical part of the system shared between
+	user and kernel space. This is only possible because we have a
+	single, unprotected, address space for both user application and
+	kernel.
+	There are 4 queues: FreeQ for the free (unused packets), VideoQ,
+	AudioQ and SpuQ for packets refeencing Video, Audio or Subpicture
+	data. When a user application needs to modif a Queue, the Quasar
+	IRQ needs to be disabled.
+		
+Jasperlib:
+	An implementation of MWD packet and buffer management is available
+	in jasperlib.c. This implementation does use any system call or
+	copy when queuing the packets. This is possible only because there's
+	no memory protection and we can disable irq from user space.
+	The playcd test application is an example of how to use it.
+
+Encoding. Support has been removed for now (DVD player project)
+
+Events
+------
+
+There is a ioctl to wait for events. Events include EOS, PAUSE, and
+RELEASE_BUFFER(when a reference counter is set to 0 by the kernel).
+
+The driver also implement the poll method. When there is an event it
+set the POLLMSG bit. This allows you to wait for events on the driver
+and another source (user input for example).
+
+
+SMP support 
+----------- 
+NONE, remenber it's only for 8500.
+

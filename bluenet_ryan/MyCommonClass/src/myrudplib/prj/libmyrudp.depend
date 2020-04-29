@@ -1,0 +1,141 @@
+# depslib dependency file v1.0
+1427855456 source:/cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_dbgprint.cpp
+	<stdio.h>
+	<stdlib.h>
+	<errno.h>
+	<sys/stat.h>
+	<sys/types.h>
+	<zlib.h>
+	<unistd.h>
+	<my_pthread_mutex_help.h>
+	<android/log.h>
+	<my_log_print.h>
+	"myrudp_dbgprint.h"
+
+1424176980 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_dbgprint.h
+
+1429447808 source:/cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_openssl_svr_helper.cpp
+	<stdafx.h>
+	<errno.h>
+	<openssl/aes.h>
+	<openssl/md5.h>
+	"myrudp_dbgprint.h"
+	"myrudp_openssl.h"
+	"myrudp_openssl_svr_helper.h"
+
+1429343462 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_openssl.h
+	<vector>
+	<stdint.h>
+
+1429694968 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_openssl_svr_helper.h
+	<vector>
+	<MySyncObj.h>
+
+1429444581 source:/cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_packbuilder.cpp
+	<stdafx.h>
+	<mydatatype.h>
+	<stdint.h>
+	<crc.h>
+	<assert.h>
+	"myrudp_packbuilder.h"
+	"myrudp_onepeerobj.h"
+
+1422502116 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_packbuilder.h
+	"myrudp_cmd_value.h"
+
+1430743037 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_cmd_value.h
+	<stdint.h>
+
+1431255032 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_onepeerobj.h
+	<sys/types.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<unistd.h>
+	<list>
+	"myrudp_packet_mgr.h"
+	"myrudp_packet_sender.h"
+	"myrudp_server_drv.h"
+
+1429441755 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_packet_mgr.h
+	<sys/types.h>
+	<stdio.h>
+	<unistd.h>
+	<pthread.h>
+	<list>
+	<stdint.h>
+	"myrudp_cmd_value.h"
+
+1431254169 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_packet_sender.h
+	"myrudp_cmd_value.h"
+	<stdint.h>
+	<list>
+
+1430020614 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_server_drv.h
+	<sys/types.h>
+	<stdio.h>
+	<unistd.h>
+	<stdint.h>
+
+1429442375 source:/cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_packet_mgr.cpp
+	<stdafx.h>
+	<errno.h>
+	<my_pthread_mutex_help.h>
+	<openssl/aes.h>
+	"myrudp_packet_mgr.h"
+	"myrudp_cmd_value.h"
+	"myrudp_dbgprint.h"
+
+1431431218 source:/cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_client.cpp
+	<errno.h>
+	<netdb.h>
+	<fcntl.h>
+	<sys/types.h>
+	<sys/time.h>
+	<sys/file.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	<arpa/inet.h>
+	<sched.h>
+	<sys/select.h>
+	<unistd.h>
+	<assert.h>
+	<stdio.h>
+	<stdlib.h>
+	<memory.h>
+	<crc.h>
+	<time.h>
+	<my_pthread_mutex_help.h>
+	<openssl/aes.h>
+	<openssl/rand.h>
+	"myrudp_client.h"
+	"myrudp_cmd_value.h"
+	"myrudp_auto_delete_buf.h"
+	"myrudp_event.h"
+	"myrudp_dbgprint.h"
+
+1431253920 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_client.h
+	<stdafx.h>
+	<mydatatype.h>
+	<MySyncObj.h>
+	<string>
+	<myframebufmgrhelper.h>
+	<pthread.h>
+	<list>
+	<semaphore.h>
+	<sys/types.h>
+	<stdio.h>
+	<unistd.h>
+	<vector>
+	<mythreadpool.h>
+	"myrudp_packet_sender.h"
+	"myrudp_packet_mgr.h"
+	"myrudp_client_drv.h"
+	"myrudp_openssl.h"
+
+1430744176 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_client_drv.h
+
+1422438099 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_auto_delete_buf.h
+
+1431253981 /cyj/cyj/MyCommonClass/src/myrudplib/src/myrudp_event.h
+

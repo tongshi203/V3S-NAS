@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<BrowseTracker_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="V4l2_Data.h" open="1" top="1" tabpos="0">
+		<Cursor position="0" topLine="0" />
+	</File>
+	<File name="DVBDSMCC_IP_MPE.cpp" open="1" top="0" tabpos="6">
+		<Cursor position="5766" topLine="62" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="main.cpp" open="1" top="0" tabpos="1">
+		<Cursor position="470" topLine="9" />
+		<BrowseMarks positions="323,741,1206" />
+		<Book_Marks positions="756" />
+	</File>
+	<File name="CUDPDataPort.h" open="1" top="0" tabpos="4">
+		<Cursor position="55" topLine="1" />
+		<BrowseMarks positions="153" />
+		<Book_Marks positions="55,174" />
+	</File>
+	<File name="CUDPDataPort.cpp" open="1" top="0" tabpos="2">
+		<Cursor position="0" topLine="0" />
+		<BrowseMarks positions="2520" />
+		<Book_Marks positions="2550" />
+	</File>
+	<File name="tspacket.h" open="1" top="0" tabpos="0">
+		<Cursor position="0" topLine="0" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="DVBDSMCC_IP_MPE.h" open="1" top="0" tabpos="5">
+		<Cursor position="1580" topLine="54" />
+		<BrowseMarks positions="" />
+		<Book_Marks positions="" />
+	</File>
+	<File name="mytype.h" open="1" top="0" tabpos="3">
+		<Cursor position="874" topLine="0" />
+	</File>
+	<File name="V4l2DataPort.cpp" open="1" top="0" tabpos="0">
+		<Cursor position="0" topLine="0" />
+	</File>
+</BrowseTracker_layout_file>

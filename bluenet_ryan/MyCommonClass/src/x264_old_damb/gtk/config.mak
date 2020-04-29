@@ -1,0 +1,20 @@
+prefix=/usr/local/viewmobile/x264
+exec_prefix=${prefix}
+bindir=${exec_prefix}/bin
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+ARCH=X86
+SYS=LINUX
+CC=gcc
+CFLAGS=-O1 -g  -Wall -I. -DHAVE_MALLOC_H -DHAVE_MMX -DHAVE_SSE3 -DARCH_X86 -DSYS_LINUX -DHAVE_PTHREAD
+ALTIVECFLAGS=
+LDFLAGS= -lm -lpthread
+AS=yasm
+ASFLAGS=-O2 -f elf -DHAVE_SSE3
+GTK=no
+EXE=
+VIS=no
+HAVE_GETOPT_LONG=1
+DEVNULL=/dev/null
+ECHON=echo -n
+CONFIGURE_ARGS= '--enable-static' '--enable-debug' '--prefix=/usr/local/viewmobile/x264' '--enable-strip'

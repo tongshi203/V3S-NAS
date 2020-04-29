@@ -1,0 +1,119 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "aacenclib"=.\etsiop_fastaacenc\aacenclib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "bitbuflib"=.\etsiop_bitbuf\bitbuflib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "enhAacPlusenc"=.\enhAacPlusenc.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name aacenclib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name bitbuflib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name etsioplib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name ffrlib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name resampllib
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name sbrenclib
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "etsioplib"=.\etsioplib\etsioplib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "ffrlib"=.\etsiop_ffrlib\ffrlib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "resampllib"=.\etsiop_resamplib\resampllib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "sbrenclib"=.\etsiop_sbrenc\sbrenclib.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

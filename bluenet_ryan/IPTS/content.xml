@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configs>
+    <content>
+        <ip>225.0.0.2</ip>
+        <port>1234</port>
+        <pid>0xb3</pid>
+    </content>
+    <content>
+        <ip>225.0.0.1</ip>
+        <port>1237</port>
+        <pid>0xb4</pid>
+    </content>
+</configs>

@@ -1,0 +1,757 @@
+     1                                  ; back port from GOGO-no coda 2.24b by Takehiro TOMINAGA
+     2                                  
+     3                                  ; GOGO-no-coda
+     4                                  ;	Copyright (C) 1999 shigeo
+     5                                  ;	special thanks to Keiichi SAKAI
+     6                                   
+     7                                  %include "nasm.h"
+     8                              <1> 
+     9                              <1> ;	Copyright (C) 1999 URURI
+    10                              <1> 
+    11                              <1> ;	nasmï¿½Ñ¥Þ¥ï¿½ï¿½ï¿½
+    12                              <1> ;	1999/08/21 ï¿½ï¿½ï¿½
+    13                              <1> ;	1999/10/10 ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½É²ï¿½
+    14                              <1> ;	1999/10/27 aoutï¿½Ð±ï¿½
+    15                              <1> ;	1999/11/07 pushf, popf ï¿½ï¿½NASMï¿½Î¥Ð¥ï¿½ï¿½Ð±ï¿½
+    16                              <1> ;	1999/12/02 for BCC ( Thanks to Miquel )
+    17                              <1> 
+    18                              <1> ; for Windows Visual C++        -> define WIN32
+    19                              <1> ;             Borland or cygwin ->        WIN32 and COFF
+    20                              <1> ; for FreeBSD 2.x               ->        AOUT
+    21                              <1> ; for TownsOS                   ->        __tos__
+    22                              <1> ; otherwise                     ->   none
+    23                              <1> 
+    24                              <1> ;Ì¾ï¿½ï¿½ï¿½ï¿½Õ¤ï¿½ï¿½ï¿½
+    25                              <1> 
+    26                              <1> BITS 32
+    27                              <1> 
+    28                              <1> section .note.GNU-stack noalloc noexec nowrite progbits
+    29                              <1> 
+    30                              <1> %ifdef YASM
+    31                              <1> 	%define segment_code segment .text align=16 use32
+    32                              <1> 	%define segment_data segment .data align=16 use32
+    33                              <1> 	%define segment_bss  segment .bss align=16 use32
+    34                              <1> %elifdef WIN32
+    35                              <1> 	%define segment_code segment .text align=16 class=CODE use32
+    36                              <1> 	%define segment_data segment .data align=16 class=DATA use32
+    37                              <1> %ifdef __BORLANDC__
+    38                              <1> 	%define segment_bss  segment .data align=16 class=DATA use32
+    39                              <1> %else
+    40                              <1> 	%define segment_bss  segment .bss align=16 class=DATA use32
+    41                              <1> %endif
+    42                              <1> %elifdef AOUT
+    43                              <1> 	%define _NAMING
+    44                              <1> 	%define segment_code segment .text
+    45                              <1> 	%define segment_data segment .data
+    46                              <1> 	%define segment_bss  segment .bss
+    47                              <1> %else
+    48                              <1> %ifidn __OUTPUT_FORMAT__,elf
+    49                              <1> 	section .note.GNU-stack progbits noalloc noexec nowrite align=1
+    50                              <1> %endif
+    51                              <1> 	%define segment_code segment .text align=16 class=CODE use32
+    52                              <1> 	%define segment_data segment .data align=16 class=DATA use32
+    53                              <1> 	%define segment_bss  segment .bss align=16 class=DATA use32
+    54                              <1> %endif
+    55                              <1> 
+    56                              <1> %ifdef WIN32
+    57                              <1> 	%define _NAMING
+    58                              <1> %endif
+    59                              <1> 
+    60                              <1> %ifdef __tos__
+    61                              <1> group CGROUP text
+    62                              <1> group DGROUP data
+    63                              <1> %endif
+    64                              <1> 
+    65                              <1> ;Ã±ï¿½ï¿½ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    66                              <1> 
+    67                              <1> %idefine float dword
+    68                              <1> %idefine fsize 4
+    69                              <1> %idefine fsizen(a) (fsize*(a))
+    70                              <1> 
+    71                              <1> ;ï¿½ï¡¼ï¿½É·ï¿½ï¿½
+    72                              <1> 
+    73                              <1> %idefine wsize 2
+    74                              <1> %idefine wsizen(a) (wsize*(a))
+    75                              <1> %idefine dwsize 4
+    76                              <1> %idefine dwsizen(a) (dwsize*(a))
+    77                              <1> 
+    78                              <1> ;REG
+    79                              <1> 
+    80                              <1> %define r0 eax
+    81                              <1> %define r1 ebx
+    82                              <1> %define r2 ecx
+    83                              <1> %define r3 edx
+    84                              <1> %define r4 esi
+    85                              <1> %define r5 edi
+    86                              <1> %define r6 ebp
+    87                              <1> %define r7 esp
+    88                              <1> 
+    89                              <1> ;MMX,3DNow!,SSE
+    90                              <1> 
+    91                              <1> %define pmov	movq
+    92                              <1> %define pmovd	movd
+    93                              <1> 
+    94                              <1> %define pupldq	punpckldq
+    95                              <1> %define puphdq	punpckhdq
+    96                              <1> %define puplwd	punpcklwd
+    97                              <1> %define puphwd	punpckhwd
+    98                              <1> 
+    99                              <1> %define xm0 xmm0
+   100                              <1> %define xm1 xmm1
+   101                              <1> %define xm2 xmm2
+   102                              <1> %define xm3 xmm3
+   103                              <1> %define xm4 xmm4
+   104                              <1> %define xm5 xmm5
+   105                              <1> %define xm6 xmm6
+   106                              <1> %define xm7 xmm7
+   107                              <1> 
+   108                              <1> ;ï¿½ï¿½ï¿½ï¿½ï¿½Ã¥Õ¥ï¿½ï¿½Ñ¤ï¿½4ï¿½Ê¥Þ¥ï¿½ï¿½ï¿½
+   109                              <1> 
+   110                              <1> %define R4(a,b,c,d) (a*64+b*16+c*4+d)
+   111                              <1> 
+   112                              <1> ;Cï¿½é¥¤ï¿½ï¿½ï¿½Ê´Ê°×¥Þ¥ï¿½ï¿½ï¿½
+   113                              <1> 
+   114                              <1> %imacro globaldef 1
+   115                              <1> 	%ifdef _NAMING
+   116                              <1> 		%define %1 _%1
+   117                              <1> 	%endif
+   118                              <1> 	global %1
+   119                              <1> %endmacro
+   120                              <1> 
+   121                              <1> %imacro externdef 1
+   122                              <1> 	%ifdef _NAMING
+   123                              <1> 		%define %1 _%1
+   124                              <1> 	%endif
+   125                              <1> 	extern %1
+   126                              <1> %endmacro
+   127                              <1> 
+   128                              <1> %imacro proc 1
+   129                              <1> 	%push	proc
+   130                              <1> 	%ifdef _NAMING
+   131                              <1> 		global _%1
+   132                              <1> 	%else
+   133                              <1> 		global %1
+   134                              <1> 	%endif
+   135                              <1> 
+   136                              <1> 	align 32
+   137                              <1> %1:
+   138                              <1> _%1:
+   139                              <1> 
+   140                              <1> 	%assign %$STACK 0
+   141                              <1> 	%assign %$STACKN 0
+   142                              <1> 	%assign %$ARG 4
+   143                              <1> %endmacro
+   144                              <1> 
+   145                              <1> %imacro endproc 0
+   146                              <1> 	%ifnctx proc
+   147                              <1> 		%error expected 'proc' before 'endproc'.
+   148                              <1> 	%else
+   149                              <1> 		%if %$STACK > 0
+   150                              <1> 			add esp, %$STACK
+   151                              <1> 		%endif
+   152                              <1> 
+   153                              <1> 		%if %$STACK <> (-%$STACKN)
+   154                              <1> 			%error STACKLEVEL mismatch check 'local', 'alloc', 'pushd', 'popd'
+   155                              <1> 		%endif
+   156                              <1> 
+   157                              <1> 		ret
+   158                              <1> 		%pop
+   159                              <1> 	%endif
+   160                              <1> %endmacro
+   161                              <1> 
+   162                              <1> %idefine sp(a) esp+%$STACK+a
+   163                              <1> 
+   164                              <1> %imacro arg 1
+   165                              <1> 	%00	equ %$ARG
+   166                              <1> 	%assign %$ARG %$ARG+%1
+   167                              <1> %endmacro
+   168                              <1> 
+   169                              <1> %imacro local 1
+   170                              <1> 	%assign %$STACKN %$STACKN-%1
+   171                              <1> 	%00 equ %$STACKN
+   172                              <1> %endmacro
+   173                              <1> 
+   174                              <1> %imacro alloc 0
+   175                              <1> 	sub esp, (-%$STACKN)-%$STACK
+   176                              <1> 	%assign %$STACK (-%$STACKN)
+   177                              <1> %endmacro
+   178                              <1> 
+   179                              <1> %imacro pushd 1-*
+   180                              <1> 	%rep %0
+   181                              <1> 		push %1
+   182                              <1> 		%assign %$STACK %$STACK+4
+   183                              <1> 	%rotate 1
+   184                              <1> 	%endrep
+   185                              <1> %endmacro
+   186                              <1> 
+   187                              <1> %imacro popd 1-*
+   188                              <1> 	%rep %0
+   189                              <1> 	%rotate -1
+   190                              <1> 		pop %1
+   191                              <1> 		%assign %$STACK %$STACK-4
+   192                              <1> 	%endrep
+   193                              <1> %endmacro
+   194                              <1> 
+   195                              <1> ; bug of NASM-0.98
+   196                              <1> %define pushf db 0x66, 0x9C
+   197                              <1> %define popf  db 0x66, 0x9D
+   198                              <1> 
+   199                              <1> %define	ge16(n)		((((n) / 16)*0xFFFFFFFF) & 0xFFFFFFFF)
+   200                              <1> %define	ge15(n)		((((n) / 15)*0xFFFFFFFF) & 0xFFFFFFFF)
+   201                              <1> %define	ge14(n)		((((n) / 14)*0xFFFFFFFF) & 0xFFFFFFFF)
+   202                              <1> %define	ge13(n)		((((n) / 13)*0xFFFFFFFF) & 0xFFFFFFFF)
+   203                              <1> %define	ge12(n)		((((n) / 12)*0xFFFFFFFF) & 0xFFFFFFFF)
+   204                              <1> %define	ge11(n)		((((n) / 11)*0xFFFFFFFF) & 0xFFFFFFFF)
+   205                              <1> %define	ge10(n)		((((n) / 10)*0xFFFFFFFF) & 0xFFFFFFFF)
+   206                              <1> %define	ge9(n)		((((n) /  9)*0xFFFFFFFF) & 0xFFFFFFFF)
+   207                              <1> %define	ge8(n)		(ge9(n) | ((((n) /  8)*0xFFFFFFFF) & 0xFFFFFFFF))
+   208                              <1> %define	ge7(n)		(ge9(n) | ((((n) /  7)*0xFFFFFFFF) & 0xFFFFFFFF))
+   209                              <1> %define	ge6(n)		(ge9(n) | ((((n) /  6)*0xFFFFFFFF) & 0xFFFFFFFF))
+   210                              <1> %define	ge5(n)		(ge9(n) | ((((n) /  5)*0xFFFFFFFF) & 0xFFFFFFFF))
+   211                              <1> %define	ge4(n)		(ge5(n) | ((((n) /  4)*0xFFFFFFFF) & 0xFFFFFFFF))
+   212                              <1> %define	ge3(n)		(ge5(n) | ((((n) /  3)*0xFFFFFFFF) & 0xFFFFFFFF))
+   213                              <1> %define	ge2(n)		(ge3(n) | ((((n) /  2)*0xFFFFFFFF) & 0xFFFFFFFF))
+   214                              <1> %define	ge1(n)		(ge2(n) | ((((n) /  1)*0xFFFFFFFF) & 0xFFFFFFFF))
+   215                              <1> 
+   216                              <1> ; macro to align for begining of loop
+   217                              <1> ; %1   does not align if it LE bytes to next alignment 
+   218                              <1> ;      4..16 
+   219                              <1> ;      default is 12
+   220                              <1> 
+   221                              <1> %imacro	loopalignK6	0-1 12 
+   222                              <1> %%here:
+   223                              <1> 	times (($$-%%here) & 15 & ge1(($$-%%here) & 15) & ~ge4(($$-%%here) & 15)) nop
+   224                              <1> 	times (1                & ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) jmp short %%skip
+   225                              <1> 	times (((($$-%%here) & 15)-2) & ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) nop
+   226                              <1> %%skip:
+   227                              <1> %endmacro
+   228                              <1> 
+   229                              <1> %imacro	loopalignK7	0-1 12 
+   230                              <1> %%here:
+   231                              <1> 	times (1 & ge1(($$-%%here) & 15)  & ~ge2(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) nop
+   232                              <1> 	times (1 & ge2(($$-%%here) & 15)  & ~ge3(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Bh,0C0h
+   233                              <1> 	times (1 & ge3(($$-%%here) & 15)  & ~ge4(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,020h
+   234                              <1> 	times (1 & ge4(($$-%%here) & 15)  & ~ge5(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h
+   235                              <1> 	times (1 & ge5(($$-%%here) & 15)  & ~ge6(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h,090h
+   236                              <1> 	times (1 & ge6(($$-%%here) & 15)  & ~ge7(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,080h,0,0,0,0
+   237                              <1> 	times (1 & ge7(($$-%%here) & 15)  & ~ge8(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0
+   238                              <1> 	times (1 & ge8(($$-%%here) & 15)  & ~ge9(($$-%%here) & 15)  & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0,90h
+   239                              <1> 	times (1 & ge9(($$-%%here) & 15)  & ~ge10(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,007h,90h,90h,90h,90h,90h,90h,90h
+   240                              <1> 	times (1 & ge10(($$-%%here) & 15) & ~ge11(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,008h,90h,90h,90h,90h,90h,90h,90h,90h
+   241                              <1> 	times (1 & ge11(($$-%%here) & 15) & ~ge12(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,009h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   242                              <1> 	times (1 & ge12(($$-%%here) & 15) & ~ge13(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ah,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   243                              <1> 	times (1 & ge13(($$-%%here) & 15) & ~ge14(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Bh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   244                              <1> 	times (1 & ge14(($$-%%here) & 15) & ~ge15(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ch,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   245                              <1> 	times (1 & ge15(($$-%%here) & 15) & ~ge16(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Dh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   246                              <1> %%skip:
+   247                              <1> %endmacro
+   248                              <1> 
+   249                              <1> %imacro	loopalign	0-1 12 
+   250                              <1> 	loopalignK7 %1
+   251                              <1> %endmacro
+   252                              <1> %define PACK(x,y,z,w)	(x*64+y*16+z*4+w)
+   253                              <1> 
+   254                              <1> %ifidn __OUTPUT_FORMAT__,elf
+   255                              <1> 
+   256                              <1> %idefine PIC_BASE(A) _GLOBAL_OFFSET_TABLE_ + $$ - $ wrt ..gotpc
+   257                              <1> %idefine PIC_EBP_REL(A) ebp + A wrt ..gotoff
+   258                              <1> %macro PIC_OFFSETTABLE 0
+   259                              <1> extern  _GLOBAL_OFFSET_TABLE_
+   260                              <1> get_pc.bp:
+   261                              <1> 	mov ebp, [esp]
+   262                              <1> 	retn
+   263                              <1> %endmacro
+   264                              <1> 
+   265                              <1> %else
+   266                              <1> 
+   267                              <1> %define PIC_BASE(A) (0)
+   268                              <1> %define PIC_EBP_REL(A) (A)
+   269                              <1> %macro PIC_OFFSETTABLE 0
+   270                              <1> get_pc.bp:
+   271                              <1> 	mov ebp, [esp]
+   272                              <1> 	retn
+   273                              <1> %endmacro
+   274                              <1> 
+   275                              <1> %endif
+   276                                  
+   277                                  	globaldef fht_SSE
+   278                              <1>  %ifdef _NAMING
+   279                              <1>  %define %1 _%1
+   280                              <1>  %endif
+   281                              <1>  global %1
+   282                                  
+   283                                  	segment_data
+   284                                  	align 16
+   285 00000000 000000000000000000-     Q_MMPP	dd	0x0,0x0,0x80000000,0x80000000
+   286 00000009 00008000000080     
+   287 00000010 000000000000008000-     Q_MPMP	dd	0x0,0x80000000,0x0,0x80000000
+   288 00000019 00000000000080     
+   289 00000020 000000000000000000-     D_1100	dd 0.0, 0.0, 1.0, 1.0
+   290 00000029 00803F0000803F     
+   291                                  costab_fft:
+   292 00000030 5E836C3F                	dd 9.238795325112867e-01
+   293 00000034 15EFC33E                	dd 3.826834323650898e-01
+   294 00000038 6DC47E3F                	dd 9.951847266721969e-01
+   295 0000003C 36BDC83D                	dd 9.801714032956060e-02
+   296 00000040 43EC7F3F                	dd 9.996988186962042e-01
+   297 00000044 B00AC93C                	dd 2.454122852291229e-02
+   298 00000048 C4FE7F3F                	dd 9.999811752836011e-01
+   299 0000004C 880FC93B                	dd 6.135884649154475e-03
+   300 00000050 F304B53F                S_SQRT2	dd	1.414213562
+   301                                  
+   302                                  	segment_code
+   303                                  
+   304                                  PIC_OFFSETTABLE
+   305                              <1> extern _GLOBAL_OFFSET_TABLE_
+   306                              <1> get_pc.bp:
+   307 00000000 8B2C24              <1>  mov ebp, [esp]
+   308 00000003 C3                  <1>  retn
+   309                                  
+   310                                  ;------------------------------------------------------------------------
+   311                                  ;	by K. SAKAI
+   312                                  ;	99/08/18	PIII 23k[clk]
+   313                                  ;	99/08/19	Ì¿Îá½ç½øÆþ¤ì´¹¤¨ PIII 22k[clk]
+   314                                  ;	99/08/20	bit reversal ¤òµì¸á¸å¤«¤é°Ü¿¢¤·¤¿ PIII 17k[clk]
+   315                                  ;	99/08/23	°ìÉô unroll PIII 14k[clk]
+   316                                  ;	99/11/12	clean up
+   317                                  ;
+   318                                  ;void fht_SSE(float *fz, int n);
+   319 00000004 90<rept>                	align 16
+   320                                  fht_SSE:
+   321 00000010 53                      	push	ebx
+   322 00000011 56                      	push	esi
+   323 00000012 57                      	push	edi
+   324 00000013 55                      	push	ebp
+   325                                  
+   326                                  %assign _P 4*5
+   327                                  
+   328                                  	;2¤ÄÌÜ¤Î¥ë¡¼¥×
+   329 00000014 8B442414                	mov	eax,[esp+_P+0]	;eax=fz
+   330 00000018 8B6C2418                	mov	ebp,[esp+_P+4]	;=n
+   331 0000001C C1E503                  	shl	ebp,3
+   332 0000001F 01C5                    	add	ebp,eax		; fn  = fz + n, ¤³¤Î´Ø¿ô½ªÎ»¤Þ¤ÇÉÔÊÑ
+   333 00000021 55                      	push	ebp
+   334                                  
+   335 00000022 E8D9FFFFFF              	call	get_pc.bp
+   336 00000027 81C5[D9FFFFFF]          	add	ebp, PIC_BASE()
+   337                                  
+   338 0000002D 8D8D[30000000]          	lea	ecx,[PIC_EBP_REL(costab_fft)]
+   339 00000033 31C0                    	xor	eax,eax
+   340 00000035 B008                    	mov	al,8		; =k1=1*(sizeof float)	// 4, 16, 64, 256,...
+   341                                  .lp2:				; do{
+   342 00000037 8B742418                	mov	esi,[esp+_P+4]	; esi=fi=fz
+   343 0000003B 8D1440                  	lea	edx,[eax+eax*2]
+   344 0000003E 89F3                    	mov	ebx, esi
+   345                                  
+   346                                  ; ¤¿¤«¤À¤«2ÊÂÎó¤·¤«´üÂÔ¤Ç¤­¤Ê¤¤ÉôÊ¬¤ÏFPU¤Î¤Û¤¦¤¬Â®¤¤¡£
+   347                                  	loopalign	16
+   348                              <1>  loopalignK7 %1
+   349                              <2> %%here:
+   350                              <2>  times (1 & ge1(($$-%%here) & 15) & ~ge2(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) nop
+   351                              <2>  times (1 & ge2(($$-%%here) & 15) & ~ge3(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Bh,0C0h
+   352                              <2>  times (1 & ge3(($$-%%here) & 15) & ~ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,020h
+   353                              <2>  times (1 & ge4(($$-%%here) & 15) & ~ge5(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h
+   354                              <2>  times (1 & ge5(($$-%%here) & 15) & ~ge6(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h,090h
+   355                              <2>  times (1 & ge6(($$-%%here) & 15) & ~ge7(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,080h,0,0,0,0
+   356                              <2>  times (1 & ge7(($$-%%here) & 15) & ~ge8(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0
+   357                              <2>  times (1 & ge8(($$-%%here) & 15) & ~ge9(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0,90h
+   358                              <2>  times (1 & ge9(($$-%%here) & 15) & ~ge10(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,007h,90h,90h,90h,90h,90h,90h,90h
+   359                              <2>  times (1 & ge10(($$-%%here) & 15) & ~ge11(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,008h,90h,90h,90h,90h,90h,90h,90h,90h
+   360                              <2>  times (1 & ge11(($$-%%here) & 15) & ~ge12(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,009h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   361                              <2>  times (1 & ge12(($$-%%here) & 15) & ~ge13(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ah,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   362                              <2>  times (1 & ge13(($$-%%here) & 15) & ~ge14(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Bh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   363                              <2>  times (1 & ge14(($$-%%here) & 15) & ~ge15(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ch,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   364                              <2>  times (1 & ge15(($$-%%here) & 15) & ~ge16(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Dh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   365                              <2> %%skip:
+   366                                  .lp20:				; do{
+   367                                  ;                       f0     = fi[0 ] + fi[k1];
+   368                                  ;                       f2     = fi[k2] + fi[k3];
+   369                                  ;                       f1     = fi[0 ] - fi[k1];
+   370                                  ;                       f3     = fi[k2] - fi[k3];
+   371                                  ;                       fi[0 ] = f0     + f2;
+   372                                  ;                       fi[k1] = f1     + f3;
+   373                                  ;                       fi[k2] = f0     - f2;
+   374                                  ;                       fi[k3] = f1     - f3;
+   375 00000040 8D3C03                  	lea	edi,[ebx+eax]	; edi=gi=fi+ki/2
+   376 00000043 D903                    	fld	dword [ebx]
+   377 00000045 D80443                  	fadd	dword [ebx+eax*2]
+   378 00000048 D90483                  	fld	dword [ebx+eax*4]
+   379 0000004B D80453                  	fadd	dword [ebx+edx*2]
+   380                                  
+   381 0000004E D903                    	fld	dword [ebx]
+   382 00000050 D82443                  	fsub	dword [ebx+eax*2]
+   383 00000053 D90483                  	fld	dword [ebx+eax*4]
+   384 00000056 D82453                  	fsub	dword [ebx+edx*2]
+   385                                  
+   386 00000059 D9C1                    	fld	st1
+   387 0000005B D8C1                    	fadd	st0,st1
+   388 0000005D D91C43                  	fstp	dword [ebx+eax*2]
+   389 00000060 DEE9                    	fsubp	st1,st0
+   390 00000062 D91C53                  	fstp	dword [ebx+edx*2]
+   391                                  
+   392 00000065 D9C1                    	fld	st1
+   393 00000067 D8C1                    	fadd	st0,st1
+   394 00000069 D91B                    	fstp	dword [ebx]
+   395 0000006B DEE9                    	fsubp	st1,st0
+   396 0000006D D91C83                  	fstp	dword [ebx+eax*4]
+   397                                  
+   398 00000070 8D1CC3                  	lea	ebx,[ebx + eax*8]	; = fi += (k1 * 4);
+   399                                  ;                       g0     = gi[0 ] + gi[k1];
+   400                                  ;                       g2     = SQRT2  * gi[k2];
+   401                                  ;                       g1     = gi[0 ] - gi[k1];
+   402                                  ;                       g3     = SQRT2  * gi[k3];
+   403                                  ;                       gi[0 ] = g0     + g2;
+   404                                  ;                       gi[k2] = g0     - g2;
+   405                                  ;                       gi[k1] = g1     + g3;
+   406                                  ;                       gi[k3] = g1     - g3;
+   407 00000073 D907                    	fld	dword [edi]
+   408 00000075 D80447                  	fadd	dword [edi+eax*2]
+   409 00000078 D985[50000000]          	fld	dword [PIC_EBP_REL(S_SQRT2)]
+   410 0000007E D80C87                  	fmul	dword [edi+eax*4]
+   411                                  
+   412 00000081 D907                    	fld	dword [edi]
+   413 00000083 D82447                  	fsub	dword [edi+eax*2]
+   414 00000086 D985[50000000]          	fld	dword [PIC_EBP_REL(S_SQRT2)]
+   415 0000008C D80C57                  	fmul	dword [edi+edx*2]
+   416                                  
+   417 0000008F D9C1                    	fld	st1
+   418 00000091 D8C1                    	fadd	st0,st1
+   419 00000093 D91C47                  	fstp	dword [edi+eax*2]
+   420 00000096 DEE9                    	fsubp	st1,st0
+   421 00000098 D91C57                  	fstp	dword [edi+edx*2]
+   422                                  
+   423 0000009B D9C1                    	fld	st1
+   424 0000009D D8C1                    	fadd	st0,st1
+   425 0000009F D91F                    	fstp	dword [edi]
+   426 000000A1 DEE9                    	fsubp	st1,st0
+   427 000000A3 D91C87                  	fstp	dword [edi+eax*4]
+   428                                  
+   429 000000A6 3B1C24                  	cmp	ebx,[esp]
+   430 000000A9 0F8C91FFFFFF            	jl	near .lp20		; while (fi<fn);
+   431                                  
+   432                                  
+   433                                  ;               i = 1; //for (i=1;i<kx;i++){
+   434                                  ;                       c1 = 1.0*t_c - 0.0*t_s;
+   435                                  ;                       s1 = 0.0*t_c + 1.0*t_s;
+   436 000000AF 0F1231                  	movlps	xmm6,[ecx] ; = { --,  --,  s1, c1}
+   437 000000B2 0F28FE                  	movaps	xmm7,xmm6
+   438                                  
+   439 000000B5 0FC6F614                	shufps	xmm6,xmm6,R4(0,1,1,0)	; = {+c1, +s1, +s1, +c1} -> É¬Í×
+   440                                  ;                       c2 = c1*c1 - s1*s1 = 1 - (2*s1)*s1;
+   441                                  ;                       s2 = c1*s1 + s1*c1 = 2*s1*c1;
+   442 000000B9 0FC6FF41                	shufps	xmm7,xmm7,R4(1,0,0,1)
+   443 000000BD F30F10EF                	movss	xmm5,xmm7		; = { --,  --,  --, s1}
+   444 000000C1 0F57BD[00000000]        	xorps	xmm7,[PIC_EBP_REL(Q_MMPP)]	; = {-s1, -c1, +c1, +s1} -> É¬Í×
+   445                                  
+   446 000000C8 F30F58ED                	addss	xmm5,xmm5		; = (--, --,  --, 2*s1)
+   447 000000CC 81C604000000            	add	esi,4		; esi = fi = fz + i
+   448 000000D2 0FC6ED00                	shufps	xmm5,xmm5,R4(0,0,0,0)	; = (2*s1, 2*s1, 2*s1, 2*s1)
+   449 000000D6 0F59EE                  	mulps	xmm5,xmm6		; = (2*s1*c1, 2*s1*s1, 2*s1*s1, 2*s1*c1)
+   450 000000D9 0F5CAD[20000000]        	subps	xmm5,[PIC_EBP_REL(D_1100)]		; = (--, 2*s1*s1-1, --, 2*s1*c1) = {-- -c2 -- s2}
+   451 000000E0 0F28E5                  	movaps	xmm4,xmm5
+   452 000000E3 0FC6ED88                	shufps	xmm5,xmm5,R4(2,0,2,0)	; = {-c2, s2, -c2, s2} -> É¬Í×
+   453                                  
+   454 000000E7 0F57A5[00000000]        	xorps	xmm4,[PIC_EBP_REL(Q_MMPP)]		; = {--, c2, --, s2}
+   455 000000EE 0FC6E422                	shufps	xmm4,xmm4,R4(0,2,0,2)	; = {s2, c2, s2, c2} -> É¬Í×
+   456                                  
+   457                                  	loopalign	16
+   458                              <1>  loopalignK7 %1
+   459                              <2> %%here:
+   460                              <2>  times (1 & ge1(($$-%%here) & 15) & ~ge2(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) nop
+   461                              <2>  times (1 & ge2(($$-%%here) & 15) & ~ge3(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Bh,0C0h
+   462                              <2>  times (1 & ge3(($$-%%here) & 15) & ~ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,020h
+   463                              <2>  times (1 & ge4(($$-%%here) & 15) & ~ge5(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h
+   464                              <2>  times (1 & ge5(($$-%%here) & 15) & ~ge6(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h,090h
+   465                              <2>  times (1 & ge6(($$-%%here) & 15) & ~ge7(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,080h,0,0,0,0
+   466                              <2>  times (1 & ge7(($$-%%here) & 15) & ~ge8(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0
+   467                              <2>  times (1 & ge8(($$-%%here) & 15) & ~ge9(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0,90h
+   468                              <2>  times (1 & ge9(($$-%%here) & 15) & ~ge10(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,007h,90h,90h,90h,90h,90h,90h,90h
+   469                              <2>  times (1 & ge10(($$-%%here) & 15) & ~ge11(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,008h,90h,90h,90h,90h,90h,90h,90h,90h
+   470                              <2>  times (1 & ge11(($$-%%here) & 15) & ~ge12(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,009h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   471                              <2>  times (1 & ge12(($$-%%here) & 15) & ~ge13(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ah,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   472                              <2>  times (1 & ge13(($$-%%here) & 15) & ~ge14(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Bh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   473 000000F2 EB0C90909090909090- <2>  times (1 & ge14(($$-%%here) & 15) & ~ge15(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ch,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   474 000000FB 9090909090          <2>
+   475                              <2>  times (1 & ge15(($$-%%here) & 15) & ~ge16(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Dh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   476                              <2> %%skip:
+   477                                  .lp21:				; do{
+   478                                  ;                               a       = c2*fi[k1] + s2*gi[k1];
+   479                                  ;                               b       = s2*fi[k1] - c2*gi[k1];
+   480                                  ;                               c       = c2*fi[k3] + s2*gi[k3];
+   481                                  ;                               d       = s2*fi[k3] - c2*gi[k3];
+   482                                  ;                               f0      = fi[0 ]        + a;
+   483                                  ;                               g0      = gi[0 ]        + b;
+   484                                  ;                               f2      = fi[k1 * 2]    + c;
+   485                                  ;                               g2      = gi[k1 * 2]    + d;
+   486                                  ;                               f1      = fi[0 ]        - a;
+   487                                  ;                               g1      = gi[0 ]        - b;
+   488                                  ;                               f3      = fi[k1 * 2]    - c;
+   489                                  ;                               g3      = gi[k1 * 2]    - d;
+   490 00000100 8D7C46F8                	lea	edi,[esi + eax*2 - 8]	; edi = gi = fz +k1-i
+   491                                  
+   492 00000104 F30F100446              	movss	xmm0,[esi + eax*2]	; = fi[k1]
+   493 00000109 F30F101456              	movss	xmm2,[esi + edx*2]	; = fi[k3]
+   494 0000010E 0FC6C200                	shufps	xmm0,xmm2,0x00	; = {fi[k3], fi[k3], fi[k1], fi[k1]}
+   495 00000112 F30F100C47              	movss	xmm1,[edi + eax*2]	; = fi[k1]
+   496 00000117 F30F101C57              	movss	xmm3,[edi + edx*2]	; = fi[k3]
+   497 0000011C 0FC6CB00                	shufps	xmm1,xmm3,0x00	; = {gi[k3], gi[k3], gi[k1], gi[k1]}
+   498 00000120 F30F1016                	movss	xmm2,[esi]		; = fi[0]
+   499 00000124 0F59C4                  	mulps	xmm0,xmm4		; *= {+s2, +c2, +s2, +c2}
+   500 00000127 F30F101C86              	movss	xmm3,[esi + eax*4]	; = fi[k2]
+   501 0000012C 0F14D3                  	unpcklps	xmm2,xmm3	; = {--, --, fi[k2], fi[0]}
+   502 0000012F 0F59CD                  	mulps	xmm1,xmm5		; *= {-c2, +s2, -c2, +s2}
+   503 00000132 F30F101C87              	movss	xmm3,[edi + eax*4]	; = gi[k2]
+   504 00000137 0F58C1                  	addps	xmm0,xmm1		; = {d, c, b, a}
+   505 0000013A F30F100F                	movss	xmm1,[edi]		; = gi[0]
+   506 0000013E 0F14CB                  	unpcklps	xmm1,xmm3	; = {--,  --, gi[k2], gi[0]}
+   507 00000141 0F14D1                  	unpcklps	xmm2,xmm1	; = {gi[k2], fi[k2], gi[0], fi[0]}
+   508 00000144 0F28CA                  	movaps	xmm1,xmm2
+   509 00000147 0F58C8                  	addps	xmm1,xmm0	; = {g2, f2, g0, f0}
+   510 0000014A 0F5CD0                  	subps	xmm2,xmm0	; = {g3, f3, g1, f1}
+   511                                  
+   512                                  ;                               a       = c1*f2     + s1*g3;
+   513                                  ;                               c       = s1*g2     + c1*f3;
+   514                                  ;                               b       = s1*f2     - c1*g3;
+   515                                  ;                               d       = c1*g2     - s1*f3;
+   516                                  ;                               fi[0 ]  = f0        + a;
+   517                                  ;                               gi[0 ]  = g0        + c;
+   518                                  ;                               gi[k1]  = g1        + b;
+   519                                  ;                               fi[k1]  = f1        + d;
+   520                                  ;                               fi[k1 * 2]  = f0    - a;
+   521                                  ;                               gi[k1 * 2]  = g0    - c;
+   522                                  ;                               gi[k3]      = g1    - b;
+   523                                  ;                               fi[k3]      = f1    - d;
+   524 0000014D 0F28D9                  	movaps	xmm3,xmm1
+   525 00000150 0F12C9                  	movhlps	xmm1,xmm1	; = {g2, f2, g2, f2}
+   526 00000153 0FC6DA14                	shufps	xmm3,xmm2,0x14	; = {f1, g1, g0, f0}
+   527 00000157 0F59CE                  	mulps	xmm1,xmm6	; *= {+c1, +s1, +s1, +c1}
+   528 0000015A 0FC6D2BB                	shufps	xmm2,xmm2,0xBB	; = {f3, g3, f3, g3}
+   529 0000015E 0F59D7                  	mulps	xmm2,xmm7	; *= {-s1, -c1, +c1, +s1}
+   530 00000161 0F58CA                  	addps	xmm1,xmm2	; = {d, b, c, a}
+   531 00000164 0F28D3                  	movaps	xmm2,xmm3
+   532 00000167 0F58D9                  	addps	xmm3,xmm1	; = {fi[k1], gi[k1], gi[0], fi[0]}
+   533 0000016A 0F5CD1                  	subps	xmm2,xmm1	; = {fi[k3], gi[k3], gi[k1*2], fi[k1*2]}
+   534 0000016D 0F12C3                  	movhlps	xmm0,xmm3
+   535 00000170 F30F111E                	movss	[esi],xmm3
+   536 00000174 0FC6DB55                	shufps	xmm3,xmm3,0x55
+   537 00000178 F30F110447              	movss	[edi+eax*2],xmm0
+   538 0000017D 0FC6C055                	shufps	xmm0,xmm0,0x55
+   539 00000181 F30F111F                	movss	[edi],xmm3
+   540 00000185 F30F110446              	movss	[esi+eax*2],xmm0
+   541 0000018A 0F12C2                  	movhlps	xmm0,xmm2
+   542 0000018D F30F111486              	movss	[esi+eax*4],xmm2
+   543 00000192 0FC6D255                	shufps	xmm2,xmm2,0x55
+   544 00000196 F30F110457              	movss	[edi+edx*2],xmm0
+   545 0000019B 0FC6C055                	shufps	xmm0,xmm0,0x55
+   546 0000019F F30F111487              	movss	[edi+eax*4],xmm2
+   547 000001A4 F30F110456              	movss	[esi+edx*2],xmm0
+   548 000001A9 8D34C6                  	lea	esi,[esi + eax*8] ; fi += (k1 * 4);
+   549 000001AC 3B3424                  	cmp	esi,[esp]
+   550 000001AF 0F8C4BFFFFFF            	jl	near .lp21		; while (fi<fn);
+   551                                  
+   552                                  
+   553                                  ; unrollÁ°¤Îdo loop¤Ï43+4Ì¿Îá
+   554                                  
+   555                                  ; ºÇÆâ¼þ¤Ç¤Ï¤Ê¤¤for¥ë¡¼¥×¤Îi=2¤«¤éÀè¤òunrolling¤·¤¿
+   556                                  ; kx=   2,   8,  32,  128
+   557                                  ; k4=  16,  64, 256, 1024
+   558                                  ;       0, 6/2,30/2,126/2
+   559                                  
+   560 000001B5 31DB                    	xor	ebx,ebx
+   561 000001B7 B308                    	mov	bl, 4*2		; = i = 4
+   562 000001B9 39C3                    	cmp	ebx,eax		; i < k1
+   563 000001BB 0F8D34010000            	jnl	near .F22
+   564                                  ;               for (i=2;i<kx;i+=2){
+   565                                  	loopalign	16
+   566                              <1>  loopalignK7 %1
+   567                              <2> %%here:
+   568                              <2>  times (1 & ge1(($$-%%here) & 15) & ~ge2(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) nop
+   569                              <2>  times (1 & ge2(($$-%%here) & 15) & ~ge3(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Bh,0C0h
+   570                              <2>  times (1 & ge3(($$-%%here) & 15) & ~ge4(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,020h
+   571                              <2>  times (1 & ge4(($$-%%here) & 15) & ~ge5(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h
+   572                              <2>  times (1 & ge5(($$-%%here) & 15) & ~ge6(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,044h,020h,000h,090h
+   573                              <2>  times (1 & ge6(($$-%%here) & 15) & ~ge7(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,080h,0,0,0,0
+   574                              <2>  times (1 & ge7(($$-%%here) & 15) & ~ge8(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0
+   575                              <2>  times (1 & ge8(($$-%%here) & 15) & ~ge9(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 08Dh,004h,005h,0,0,0,0,90h
+   576                              <2>  times (1 & ge9(($$-%%here) & 15) & ~ge10(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,007h,90h,90h,90h,90h,90h,90h,90h
+   577                              <2>  times (1 & ge10(($$-%%here) & 15) & ~ge11(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,008h,90h,90h,90h,90h,90h,90h,90h,90h
+   578                              <2>  times (1 & ge11(($$-%%here) & 15) & ~ge12(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,009h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   579                              <2>  times (1 & ge12(($$-%%here) & 15) & ~ge13(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ah,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   580                              <2>  times (1 & ge13(($$-%%here) & 15) & ~ge14(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Bh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   581                              <2>  times (1 & ge14(($$-%%here) & 15) & ~ge15(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Ch,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   582 000001C1 EB0D90909090909090- <2>  times (1 & ge15(($$-%%here) & 15) & ~ge16(($$-%%here) & 15) & ~ge%1(($$-%%here) & 15)) DB 0EBh,00Dh,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h,90h
+   583 000001CA 909090909090        <2>
+   584                              <2> %%skip:
+   585                                  .lp22:
+   586                                  ; at here, xmm6 is {c3, s3, s3, c3}
+   587                                  ;                       c1 = c3*t_c - s3*t_s;
+   588                                  ;                       s1 = c3*t_s + s3*t_c;
+   589 000001D0 0F1201                  	movlps	xmm0,[ecx]
+   590 000001D3 0FC6C050                	shufps	xmm0,xmm0,R4(1,1,0,0)	; = {t_s, t_s, t_c, t_c}
+   591 000001D7 0F59F0                  	mulps	xmm6,xmm0	; = {c3*ts, s3*ts, s3*tc, c3*tc}
+   592 000001DA 0F12E6                  	movhlps	xmm4,xmm6	; = {--,    --,    c3*ts, s3*ts}
+   593 000001DD 0F57A5[10000000]        	xorps	xmm4,[PIC_EBP_REL(Q_MPMP)]	; = {--,    --,   -c3*ts, s3*ts}
+   594 000001E4 0F5CF4                  	subps	xmm6,xmm4	; = {-,-, c3*ts+s3*tc, c3*tc-s3*ts}={-,-,s1,c1}
+   595                                  
+   596                                  ;                       c3 = c1*t_c - s1*t_s;
+   597                                  ;                       s3 = s1*t_c + c1*t_s;
+   598 000001E7 0FC6F614                	shufps	xmm6,xmm6,0x14	; = {c1, s1, s1, c1}
+   599 000001EB 0F59C6                  	mulps	xmm0,xmm6	; = {ts*c1 ts*s1 tc*s1 tc*c1}
+   600 000001EE 0F12D8                  	movhlps	xmm3,xmm0
+   601 000001F1 0F579D[10000000]        	xorps	xmm3,[PIC_EBP_REL(Q_MPMP)]
+   602 000001F8 0F5CC3                  	subps	xmm0,xmm3	; = {--, --, s3, c3}
+   603                                  
+   604                                  ; {s2 s4 c4 c2} = {2*s1*c1 2*s3*c3 1-2*s3*s3 1-2*s1*s1}
+   605 000001FB 0F14F0                  	unpcklps	xmm6,xmm0	; xmm6 = {s3, s1, c3, c1}
+   606 000001FE 0F28FE                  	movaps	xmm7, xmm6
+   607 00000201 0FC6F6B4                	shufps	xmm6,xmm6,R4(2,3,1,0)	; xmm6 = {s1, s3, c3, c1}
+   608 00000205 0F58FF                  	addps	xmm7, xmm7		; {s3*2, s1*2,   --,   --}
+   609 00000208 8B7C2418                	mov	edi,[esp+_P+4]		; = fz
+   610 0000020C 0FC6FFBE                	shufps	xmm7, xmm7, R4(2,3,3,2)	; {s1*2, s3*2, s3*2, s1*2}
+   611 00000210 29DF                    	sub	edi,ebx			; edi = fz - i/2
+   612 00000212 0F59FE                  	mulps	xmm7, xmm6		; {s1*s1*2, s3*s3*2, s3*c3*2, s1*c1*2}
+   613 00000215 8D345F                  	lea	esi,[edi + ebx*2]	; esi = fi = fz +i/2
+   614 00000218 0F5CBD[20000000]        	subps	xmm7, [PIC_EBP_REL(D_1100)]		; {-c2, -c4, s4, s2}
+   615 0000021F 8D7C47FC                	lea	edi,[edi + eax*2-4]	; edi = gi = fz +k1-i/2
+   616                                  
+   617                                  ;                       fi = fz +i;
+   618                                  ;                       gi = fz +k1-i;
+   619                                  ;                       do{
+   620                                  .lp220:
+   621                                  ; unroll¸å¤Îdo loop¤Ï51+4Ì¿Îá
+   622                                  ;                               a       = c2*fi[k1  ] + s2*gi[k1  ];
+   623                                  ;                               e       = c4*fi[k1+1] + s4*gi[k1-1];
+   624                                  ;                               f       = s4*fi[k1+1] - c4*gi[k1-1];
+   625                                  ;                               b       = s2*fi[k1  ] - c2*gi[k1  ];
+   626                                  ;                               c       = c2*fi[k3  ] + s2*gi[k3  ];
+   627                                  ;                               g       = c4*fi[k3+1] + s4*gi[k3-1];
+   628                                  ;                               h       = s4*fi[k3+1] - c4*gi[k3-1];
+   629                                  ;                               d       = s2*fi[k3  ] - c2*gi[k3  ];
+   630                                  
+   631 00000223 0F28E7                  	movaps	xmm4,xmm7	; = {-c2 -c4  s4  s2}
+   632 00000226 0F57A5[00000000]        	xorps	xmm4,[PIC_EBP_REL(Q_MMPP)]	; = { c2  c4  s4  s2}
+   633 0000022D 0FC6E41B                	shufps	xmm4,xmm4,0x1B	; = { s2  s4  c4  c2}
+   634 00000231 0F120446                	movlps	xmm0,[esi+eax*2]
+   635 00000235 0F120C47                	movlps	xmm1,[edi+eax*2]
+   636 00000239 0F121456                	movlps	xmm2,[esi+edx*2]
+   637 0000023D 0F121C57                	movlps	xmm3,[edi+edx*2]
+   638 00000241 0FC6C014                	shufps	xmm0,xmm0,0x14
+   639 00000245 0FC6C941                	shufps	xmm1,xmm1,0x41
+   640 00000249 0FC6D214                	shufps	xmm2,xmm2,0x14
+   641 0000024D 0FC6DB41                	shufps	xmm3,xmm3,0x41
+   642 00000251 0F59C4                  	mulps	xmm0,xmm4
+   643 00000254 0F59CF                  	mulps	xmm1,xmm7
+   644 00000257 0F59D4                  	mulps	xmm2,xmm4
+   645 0000025A 0F59DF                  	mulps	xmm3,xmm7
+   646 0000025D 0F58C1                  	addps	xmm0,xmm1	; xmm0 = {b, f, e, a}
+   647 00000260 0F58D3                  	addps	xmm2,xmm3	; xmm2 = {d, h, g, c}
+   648                                  ;17
+   649                                  
+   650                                  ;                               f0      = fi[0   ]    + a;
+   651                                  ;                               f4      = fi[0 +1]    + e;
+   652                                  ;                               g4      = gi[0 -1]    + f;
+   653                                  ;                               g0      = gi[0   ]    + b;
+   654                                  ;                               f1      = fi[0   ]    - a;
+   655                                  ;                               f5      = fi[0 +1]    - e;
+   656                                  ;                               g5      = gi[0 -1]    - f;
+   657                                  ;                               g1      = gi[0   ]    - b;
+   658                                  ;                               f2      = fi[k2  ]    + c;
+   659                                  ;                               f6      = fi[k2+1]    + g;
+   660                                  ;                               g6      = gi[k2-1]    + h;
+   661                                  ;                               g2      = gi[k2  ]    + d;
+   662                                  ;                               f3      = fi[k2  ]    - c;
+   663                                  ;                               f7      = fi[k2+1]    - g;
+   664                                  ;                               g7      = gi[k2-1]    - h;
+   665                                  ;                               g3      = gi[k2  ]    - d;
+   666 00000263 0F120E                  	movlps	xmm1,[esi      ]
+   667 00000266 0F160F                  	movhps	xmm1,[edi      ]
+   668 00000269 0F28E1                  	movaps	xmm4,xmm1
+   669 0000026C 0F5CC8                  	subps	xmm1,xmm0	; xmm1 = {g1, g5, f5, f1}
+   670 0000026F 0F121C86                	movlps	xmm3,[esi+eax*4]
+   671 00000273 0F161C87                	movhps	xmm3,[edi+eax*4]
+   672 00000277 0F28EB                  	movaps	xmm5,xmm3
+   673 0000027A 0F5CDA                  	subps	xmm3,xmm2	; xmm3 = {g3, g7, f7, f3}
+   674 0000027D 0F58C4                  	addps	xmm0,xmm4	; xmm0 = {g0, g4, f4, f0}
+   675 00000280 0F58D5                  	addps	xmm2,xmm5	; xmm2 = {g2, g6, f6, f2}
+   676                                  ;10
+   677                                  
+   678                                  ;                               a       = c1*f2     + s1*g3;	½ç*½ç + µÕ*µÕ
+   679                                  ;                               e       = c3*f6     + s3*g7;
+   680                                  ;                               g       = s3*g6     + c3*f7;
+   681                                  ;                               c       = s1*g2     + c1*f3;
+   682                                  ;                               d       = c1*g2     - s1*f3;	½ç*µÕ - µÕ*½ç
+   683                                  ;                               h       = c3*g6     - s3*f7;
+   684                                  ;                               f       = s3*f6     - c3*g7;
+   685                                  ;                               b       = s1*f2     - c1*g3;
+   686                                  
+   687 00000283 0F28EE                  	movaps	xmm5,xmm6	; xmm6 = {s1, s3, c3, c1}
+   688 00000286 0FC6ED1B                	shufps	xmm5,xmm5,0x1B	; = {c1, c3, s3, s1}
+   689 0000028A 0F28E2                  	movaps	xmm4,xmm2
+   690 0000028D 0F59E6                  	mulps	xmm4,xmm6
+   691 00000290 0FC6D21B                	shufps	xmm2,xmm2,0x1B	; xmm2 = {f2, f6, g6, g2}
+   692 00000294 0F59D6                  	mulps	xmm2,xmm6
+   693 00000297 0F59EB                  	mulps	xmm5,xmm3
+   694 0000029A 0F59DE                  	mulps	xmm3,xmm6
+   695 0000029D 0FC6DB1B                	shufps	xmm3,xmm3,0x1B
+   696 000002A1 0F58E3                  	addps	xmm4,xmm3	; = {c, g, e, a}
+   697 000002A4 0F5CD5                  	subps	xmm2,xmm5	; = {b, f, h, d}
+   698                                  ;10
+   699                                  
+   700                                  ;                               fi[0   ]  = f0        + a;
+   701                                  ;                               fi[0 +1]  = f4        + e;
+   702                                  ;                               gi[0 -1]  = g4        + g;
+   703                                  ;                               gi[0   ]  = g0        + c;
+   704                                  ;                               fi[k2  ]  = f0        - a;
+   705                                  ;                               fi[k2+1]  = f4        - e;
+   706                                  ;                               gi[k2-1]  = g4        - g;
+   707                                  ;                               gi[k2  ]  = g0        - c;
+   708                                  ;                               fi[k1  ]  = f1        + d;
+   709                                  ;                               fi[k1+1]  = f5        + h;
+   710                                  ;                               gi[k1-1]  = g5        + f;
+   711                                  ;                               gi[k1  ]  = g1        + b;
+   712                                  ;                               fi[k3  ]  = f1        - d;
+   713                                  ;                               fi[k3+1]  = f5        - h;
+   714                                  ;                               gi[k3-1]  = g5        - f;
+   715                                  ;                               gi[k3  ]  = g1        - b;
+   716 000002A7 0F28D8                  	movaps	xmm3,xmm0
+   717 000002AA 0F5CC4                  	subps	xmm0,xmm4
+   718 000002AD 0F130486                	movlps	[esi+eax*4],xmm0
+   719 000002B1 0F170487                	movhps	[edi+eax*4],xmm0
+   720 000002B5 0F58E3                  	addps	xmm4,xmm3
+   721 000002B8 0F1326                  	movlps	[esi      ],xmm4
+   722 000002BB 0F1727                  	movhps	[edi      ],xmm4
+   723                                  
+   724 000002BE 0F28E9                  	movaps	xmm5,xmm1
+   725 000002C1 0F5CCA                  	subps	xmm1,xmm2
+   726 000002C4 0F130C56                	movlps	[esi+edx*2],xmm1
+   727 000002C8 0F170C57                	movhps	[edi+edx*2],xmm1
+   728 000002CC 0F58D5                  	addps	xmm2,xmm5
+   729 000002CF 0F131446                	movlps	[esi+eax*2],xmm2
+   730 000002D3 0F171447                	movhps	[edi+eax*2],xmm2
+   731                                  ; 14
+   732                                  ;                               gi     += k4;
+   733                                  ;                               fi     += k4;
+   734 000002D7 8D3CC7                  	lea	edi,[edi + eax*8] ; gi += (k1 * 4);
+   735 000002DA 8D34C6                  	lea	esi,[esi + eax*8] ; fi += (k1 * 4);
+   736 000002DD 3B3424                  	cmp	esi,[esp]
+   737 000002E0 0F8C3DFFFFFF            	jl	near .lp220		; while (fi<fn);
+   738                                  ;                       } while (fi<fn);
+   739                                  
+   740 000002E6 83C308                  	add	ebx,byte 2*4	; i+= 4
+   741 000002E9 39C3                    	cmp	ebx,eax		; i < k1
+   742 000002EB 0FC6F669                	shufps	xmm6,xmm6,R4(1,2,2,1)	; (--,s3,c3,--) => {c3, s3, s3, c3}
+   743 000002EF 0F8CDBFEFFFF            	jl	near .lp22
+   744                                  ;               }
+   745                                  .F22:
+   746 000002F5 C1E002                  	shl	eax,2
+   747 000002F8 83C108                  	add	ecx, byte 8
+   748 000002FB 3B44241C                	cmp	eax,[esp+_P+8]	; while ((k1 * 4)<n);
+   749 000002FF 0F8E32FDFFFF            	jle	near .lp2
+   750 00000305 5D                      	pop	ebp
+   751 00000306 5D                      	pop	ebp
+   752 00000307 5F                      	pop	edi
+   753 00000308 5E                      	pop	esi
+   754 00000309 5B                      	pop	ebx
+   755 0000030A C3                      	ret
+   756                                  
+   757                                  	end

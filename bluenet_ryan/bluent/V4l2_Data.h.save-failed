@@ -1,0 +1,25 @@
+#ifndef V4L2_DATA_H
+#define V4L2_DATA_H
+
+class V4l2DataPort
+{
+public:
+    V4l2DataPort();
+    ~V4l2DataPort();
+    bool Initialize( void );
+    void Invalid();
+    int GetData( unsigned char * buf );
+    int SentData( unsigned char * buf, int len);
+
+public:
+    int m_hSocket;
+    int myDstPort;
+
+private:
+    struct sockaddr_in dstAddr;
+    socklen_t dstAddrLen ;
+
+
+};
+
+#endif // UDPPORT_H

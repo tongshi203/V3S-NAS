@@ -1,0 +1,17 @@
+main.o: src/main.c src/mp4file.h 3g_lib/ISOMovies.h 3g_lib/MP4Movies.h \
+ 3g_lib/linux/MP4OSMacros.h 3g_lib/au_channel.h \
+ etsiop_fastaacenc/aacenc.h etsioplib/typedef.h etsioplib/typedefs.h \
+ etsiop_resamplib/downsample_FIR.h etsioplib/basic_op.h \
+ etsioplib/typedef.h etsiop_sbrenc/sbr_main.h etsiop_ffrlib/ffr.h \
+ etsiop_ffrlib/intrinsics.h etsioplib/oper_32b.h etsioplib/count.h
+mp4file.o: src/mp4file.c etsiop_bitbuf/FFR_bitbuffer.h \
+ etsiop_ffrlib/intrinsics.h etsioplib/basic_op.h etsioplib/typedef.h \
+ etsioplib/typedefs.h etsioplib/oper_32b.h src/mp4file.h \
+ 3g_lib/ISOMovies.h 3g_lib/MP4Movies.h 3g_lib/linux/MP4OSMacros.h \
+ 3g_lib/MP4Movies.h
+brswitchmain.o: src/brswitchmain.c src/mp4file.h 3g_lib/ISOMovies.h \
+ 3g_lib/MP4Movies.h 3g_lib/linux/MP4OSMacros.h 3g_lib/au_channel.h \
+ etsiop_fastaacenc/aacenc.h etsioplib/typedef.h etsioplib/typedefs.h \
+ etsiop_resamplib/downsample_FIR.h etsioplib/basic_op.h \
+ etsioplib/typedef.h etsiop_sbrenc/sbr_main.h etsiop_ffrlib/ffr.h \
+ etsiop_ffrlib/intrinsics.h etsioplib/oper_32b.h etsioplib/count.h
