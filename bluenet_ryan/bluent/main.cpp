@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
         WORD nPID = 0;
         GetPIDPort( argv[1+i], nPID, nPort );
         printf("(0x%04x:%d) ", nPID, nPort);
-        //pMySendUDPPort[i].Initialize( "127.0.0.1", 10021+i, "127.0.0.1", nPort);
-        pMySendUDPPort[i].Initialize( "NULL", 10021+i, "1.8.86.220", nPort);
+        pMySendUDPPort[i].Initialize( "127.0.0.1", 10021+i, "127.0.0.1", nPort);
+//        pMySendUDPPort[i].Initialize( "NULL", 10021+i, "1.8.86.220", nPort);
         if( NULL == pMyDVBDSMCC )
             pMyDVBDSMCC = new CDVBDSMCC_IP_MPE( &pMySendUDPPort[i], nPID );
         else
