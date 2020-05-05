@@ -85,7 +85,7 @@ ov2640: camera@30 {
 				port {
 					ov2640_0: endpoint {
 						remote-endpoint = <&csi1_ep>;
-						bus-width = <8>;
+						bus-width = <16>;
 					};
 				};
 			};
@@ -142,13 +142,13 @@ ov2640: camera@30 {
         port {
 			/* Parallel bus endpoint */
 			csi1_ep: endpoint {
-				bus-width = <8>;
+				bus-width = <12>;
 				remote-endpoint = <&ov2640_0>;
 				/* If hsync-active/vsync-active are missing,
 				   embedded BT.656 sync is used */
-				hsync-active = <1>; /* Active high */
-				vsync-active = <1>; /* Active high */
-				pclk-sample = <0>;  /* Falling */
+				hsync-active = <0>; /* Active high */
+				vsync-active = <0>; /* Active high */
+				pclk-sample = <1>;  /* Falling */
 				};
 			};
 };

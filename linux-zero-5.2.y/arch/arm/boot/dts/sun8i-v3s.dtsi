@@ -257,7 +257,7 @@
 
 			dtmb_csi_pins: dtmb-csi-pe {
 				pins = "PE0", "PE2", "PE3", "PE4", "PE5",
-				       "PE6", "PE7", "PE8", "PE9", "PE10", "PE11";
+				       "PE6", "PE7", "PE8", "PE9", "PE10", "PE11","PE12","PE13","PE14","PE15";
 				function = "csi";
 				bias-pull-up;
 			};

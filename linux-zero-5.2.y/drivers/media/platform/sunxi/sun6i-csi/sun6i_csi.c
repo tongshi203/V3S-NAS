@@ -484,10 +484,12 @@ static void sun6i_csi_set_format(struct sun6i_csi_dev *sdev)
 
 //	val = get_csi_output_format(sdev, csi->config.pixelformat,
 //				    csi->config.field);
+    val = 2;
 	cfg |= CSI_CH_CFG_OUTPUT_FMT(val);
 
 //	val = get_csi_input_seq(sdev, csi->config.code,
 //				csi->config.pixelformat);
+    val = 0;
 	cfg |= CSI_CH_CFG_INPUT_SEQ(val);
 
 //	if (csi->config.field == V4L2_FIELD_TOP)
