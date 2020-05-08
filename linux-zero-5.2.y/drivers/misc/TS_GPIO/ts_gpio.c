@@ -26,7 +26,10 @@
 #define IOCTL_RST_H  _IOW (LED_MAGIC, 4, int)
 #define IOCTL_RST_L  _IOW (LED_MAGIC, 5, int)
 #define IOCTL_READ_KEY _IOW (LED_MAGIC, 6, int)
-
+#define IOCTL_EXT_SYNC_H  _IOW (LED_MAGIC, 7, int)
+#define IOCTL_EXT_SYNC_L  _IOW (LED_MAGIC, 8, int)
+#define IOCTL_READ_MorS _IOW (LED_MAGIC, 9, int)
+#define IOCTL_READ_SYNC _IOW (LED_MAGIC, 10, int)
 /*
 由宏定义组成的一组32位数据
 bit31~bit30 2位为 “区别读写” 区，作用是区分是读取命令还是写入命令。
@@ -46,6 +49,15 @@ _IOW  (魔数， 基数， 变量型)
 #define STR_LED_GPIO  "GLED_PG2"
 #define KEY_GPIO       152
 #define STR_KEY_GPIO  "KEY_PE24"
+
+#define MorS_GPIO       194
+#define STR_MorS_GPIO  "MorS_PG2"
+#define SYNC_GPIO       193
+#define STR_SYNC_GPIO  "SYNC_PG1"
+#define EXTSYNC_GPIO       192
+#define STR_EXTSYNC_GPIO  "EXTSYNC_PG0"
+
+
 
 static int major;	/*定义一个用于保存major的值，可以指定值，也可以自由分配*/
 static struct class *ts_gpio_class;	/*定义一个class，用于注册设备*/
@@ -87,6 +99,16 @@ static long TS_GPIO_IOCTL( struct file *files, unsigned int cmd, unsigned long a
 		{
             break;
 		}
+		case IOCTL_EXT_SYNC_H:
+		{
+            gpio_set_value(EXTSYNC_GPIO, 1);
+            break;
+		}
+		case IOCTL_EXT_SYNC_L:
+		{
+            gpio_set_value(EXTSYNC_GPIO, 0);
+            break;
+		}
 		default:
 			break;
 	}
@@ -94,12 +116,12 @@ static long TS_GPIO_IOCTL( struct file *files, unsigned int cmd, unsigned long a
 }
 /*释放函数*/
 static int TS_GPIO_release(struct inode *inode, struct file *file){
-    printk(KERN_EMERG "TS_GPIO release\n");
+//    printk(KERN_EMERG "TS_GPIO release\n");
     return 0;
 }
 /*打开函数*/
 static int TS_GPIO_open(struct inode *inode, struct file *file){
-    printk(KERN_EMERG "TS_GPIO open\n");
+//    printk(KERN_EMERG "TS_GPIO open\n");
     return 0;
 }
 /*ops结构体，存储相关的操作函数*/
@@ -116,6 +138,8 @@ static int TS_GPIO_init(void)
     int ret;
 
     printk(KERN_EMERG "module TS GPIO init...!\n");
+
+#if defined(CONFIG_TS_GPIO_NAS)
     ret = gpio_request(LED_GPIO,STR_LED_GPIO);
     if(ret < 0){
         printk(KERN_EMERG "gpio_request LED_GPIO failed!\n");
@@ -139,7 +163,32 @@ static int TS_GPIO_init(void)
     }
     gpio_direction_input(KEY_GPIO);
 //    gpio_set_value(KEY_GPIO, 1);
+#endif // defined
 
+#if defined(CONFIG_TS_GPIO_CAM)
+    ret = gpio_request(MorS_GPIO,STR_MorS_GPIO);
+    if(ret < 0){
+        printk(KERN_EMERG "gpio_request master or slave GPIO failed!\n");
+        return ret;
+    }
+    gpio_direction_input(MorS_GPIO);
+
+    ret = gpio_request(SYNC_GPIO,STR_SYNC_GPIO);
+    if(ret < 0){
+        printk(KERN_EMERG "gpio_request SYNC_GPIO failed!\n");
+        return ret;
+    }
+    gpio_direction_input(SYNC_GPIO);
+
+    ret = gpio_request(EXTSYNC_GPIO,STR_EXTSYNC_GPIO);
+    if(ret < 0){
+        printk(KERN_EMERG "gpio_request EXTSYNC_GPIO failed!\n");
+        return ret;
+    }
+    gpio_direction_output(EXTSYNC_GPIO,1);
+    gpio_set_value(EXTSYNC_GPIO, 1);
+
+#endif // defined
     major = register_chrdev(0, "TS_GPIO", &TS_GPIO_ops);
 
 	ts_gpio_class = class_create(THIS_MODULE, "ts_gpio_class");

@@ -63,12 +63,7 @@
 	status = "okay";
 };
 
-&mmc0 {
-	broken-cd;
-	bus-width = <4>;
-	vmmc-supply = <&reg_vcc3v3>;
-	status = "okay";
-};
+
 
 &i2c0 {
 	status = "okay";
@@ -91,14 +86,6 @@ ov2640: camera@30 {
 			};
 };
 
-&i2c1 {
-	pinctrl-0 = <&i2c1_pins>;
-	pinctrl-names = "default";
-        status = "okay";
-
-       };
-
-
 &ohci0 {
 	status = "okay";
 };
@@ -108,6 +95,13 @@ ov2640: camera@30 {
 	pinctrl-names = "default";
 	status = "okay";
 };
+
+&uart1 {
+        pinctrl-0 = <&uart1_pe_pins>;
+        pinctrl-names = "default";
+        status = "okay";
+};
+
 &spi0 {
         status ="okay";
 
