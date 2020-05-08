@@ -1,0 +1,33 @@
+/*******************************
+
+
+lighttpd配置步骤：
+
+
+
+******************************/
+
+确认编译器后与下面的编译器对应
+交叉编译指令：
+$ ./configure --host arm-linux --build pentium-pc-linux --without-zlib --withoutbzip2 --without-pcre --target arm-linux
+
+编译：
+make
+
+安装：
+sudo make install
+
+lighttpd 的 lib 和 sbin 目录会安装在 /usr/local 底下，使用时必须将之拷贝到 root file system.
+
+config_html_sample/ 目錄下有 lighttpd configuration file (lighttpd.conf) 以及homepage html (index.html) 例子. 
+请将 lighttpd.conf 放在 sbin/ 目錄下，並在sbin/ 目錄下新增子目录 www，將 index.html 放在 www/ 目录下.
+
+另外，新增以下文件，分別是 lighttpd 的错误及存取记录：（若不需要log，则可以不添加，但是应在lighttpd.conf中注释掉相应选项）
+/var/log/lighttpd/error.log
+/var/log/lighttpd/access.log
+
+启动服务指令：
+lighttpd start -f /sbin/lighttpd.conf
+
+
+注：服务器ip应与conf文件中配置ip一致
