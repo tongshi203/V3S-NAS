@@ -30,8 +30,9 @@ make menuconfig
 sudo mkfs.jffs2 -s 0x100 -e 0x10000 -p 0xAF0000 -d rootfs/ -o jffs2.img
 
 5.2:
-sudo mkfs.jffs2 -s 0x100 -e 0x10000 -p 0x9F0000 -d rootfs/ -o jffs2.img
+sudo mkfs.jffs2 -s 0x100 -e 0x10000 -p 0x9F0000 -d rootfs/ -o jffs2.img  //16M
 
+sudo mkfs.jffs2 -s 0x200 -e 0x10000 -p 0x19F0000 -d rootfs/ -o jffs2.img  //32M
 
 
 dd if=/dev/zero of=flashimg.bin bs=16M count=1
