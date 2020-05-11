@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     unsigned char *buf = new unsigned char[188*4]();
     myReceiveTSPort = new CV4l2DataPort();
-    myReceiveTSPort -> Initialize("/dev/video0",188,1,12);
+    myReceiveTSPort -> Initialize("/dev/video0",188,1,8);
 
     CUDPDataPort* pMySendUDPPort = new CUDPDataPort[argc-1];
     CDVBDSMCC_IP_MPE* pMyDVBDSMCC = NULL;
