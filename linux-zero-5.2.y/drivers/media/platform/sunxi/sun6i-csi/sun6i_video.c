@@ -575,9 +575,17 @@ static int sun6i_video_link_validate(struct media_link *link)
 //			source_fmt.format.code);
 //		return -EPIPE;
 //	}
-    source_fmt.format.code = MEDIA_BUS_FMT_SGRBG12_1X12;//MEDIA_BUS_FMT_JPEG_1X8;
+#if defined(CONFIG_TS_GPIO_NAS)
+    source_fmt.format.code = MEDIA_BUS_FMT_JPEG_1X8;//MEDIA_BUS_FMT_JPEG_1X8;
     source_fmt.format.width = 188;
     source_fmt.format.height = 1;
+#endif // defined
+
+#if defined(CONFIG_TS_GPIO_CAM)
+    source_fmt.format.code = MEDIA_BUS_FMT_SGRBG12_1X12;//MEDIA_BUS_FMT_JPEG_1X8;
+    source_fmt.format.width = 600;
+    source_fmt.format.height = 512;
+#endif // defined
 
 	if (source_fmt.format.width != video->fmt.fmt.pix.width ||
 	    source_fmt.format.height != video->fmt.fmt.pix.height) {

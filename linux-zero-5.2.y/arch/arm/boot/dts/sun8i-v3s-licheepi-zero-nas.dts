@@ -111,7 +111,7 @@ ov2640: camera@30 {
 &spi0 {
         status ="okay";
 
-        xt25f128b:xt25f128b@0 {
+        mx25l25635e:mx25l25635e@0 {
                 compatible = "jedec,spi-nor";
                 reg = <0x0>;
                 spi-max-frequency = <50000000>;
@@ -144,7 +144,7 @@ ov2640: camera@30 {
         port {
 			/* Parallel bus endpoint */
 			csi1_ep: endpoint {
-				bus-width = <12>;
+				bus-width = <8>;
 				remote-endpoint = <&ov2640_0>;
 				/* If hsync-active/vsync-active are missing,
 				   embedded BT.656 sync is used */

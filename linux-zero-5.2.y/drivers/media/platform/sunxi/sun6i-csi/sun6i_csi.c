@@ -479,6 +479,30 @@ static void sun6i_csi_set_format(struct sun6i_csi_dev *sdev)
 
 //	val = get_csi_input_format(sdev, csi->config.code,
 //				   csi->config.pixelformat);
+
+#if defined(CONFIG_TS_GPIO_NAS)
+    val = 0;
+	cfg |= CSI_CH_CFG_INPUT_FMT(val);
+
+//	val = get_csi_output_format(sdev, csi->config.pixelformat,
+//				    csi->config.field);
+    val = 0;
+	cfg |= CSI_CH_CFG_OUTPUT_FMT(val);
+
+//	val = get_csi_input_seq(sdev, csi->config.code,
+//				csi->config.pixelformat);
+    val = 0;
+	cfg |= CSI_CH_CFG_INPUT_SEQ(val);
+
+//	if (csi->config.field == V4L2_FIELD_TOP)
+//		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD0;
+//	else if (csi->config.field == V4L2_FIELD_BOTTOM)
+//		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD1;
+//	else
+		cfg |= CSI_CH_CFG_FIELD_SEL_BOTH;
+#endif
+
+#if defined(CONFIG_TS_GPIO_CAM)
     val = 0;
 	cfg |= CSI_CH_CFG_INPUT_FMT(val);
 
@@ -498,6 +522,7 @@ static void sun6i_csi_set_format(struct sun6i_csi_dev *sdev)
 //		cfg |= CSI_CH_CFG_FIELD_SEL_FIELD1;
 //	else
 		cfg |= CSI_CH_CFG_FIELD_SEL_BOTH;
+#endif
 
 	regmap_write(sdev->regmap, CSI_CH_CFG_REG, cfg);
 
