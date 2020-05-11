@@ -287,121 +287,109 @@ void aw_fel_spiflash_read(feldev_handle *dev,
 # define CMD_EXTNADDR_RDEAR             0xC8
  size_t bank_curr = 0;
 
-//void aw_fel_spiflash_write_helper(feldev_handle *dev,
-//				  uint32_t offset, void *buf, size_t len,
-//				  size_t erase_size, uint8_t erase_cmd,
-//				  size_t program_size, uint8_t program_cmd)
-//{
-//	uint8_t *buf8 = (uint8_t *)buf;
-//	size_t max_chunk_size = dev->soc_info->scratch_addr - dev->soc_info->spl_addr;
-//	size_t cmd_idx;
-//
-//	if (max_chunk_size > 0x1000)
-//		max_chunk_size = 0x1000;
-//	uint8_t *cmdbuf = malloc(max_chunk_size);
-//	cmd_idx = 0;
-//
-//	prepare_spi_batch_data_transfer(dev, dev->soc_info->spl_addr);
-//
-//	while (len > 0) {
-//		while (len > 0 && max_chunk_size - cmd_idx > program_size + 64) {
-//			if (offset % erase_size == 0) {
-//				/* Emit write enable command */
-//				cmdbuf[cmd_idx++] = 0;
-//				cmdbuf[cmd_idx++] = 1;
-//				cmdbuf[cmd_idx++] = CMD_WRITE_ENABLE;
-//				/* Emit erase command */
-//				cmdbuf[cmd_idx++] = 0;
-//				cmdbuf[cmd_idx++] = 4;
-//				cmdbuf[cmd_idx++] = erase_cmd;
-//				cmdbuf[cmd_idx++] = offset >> 16;
-//				cmdbuf[cmd_idx++] = offset >> 8;
-//				cmdbuf[cmd_idx++] = offset;
-//				/* Emit wait for completion */
-//				cmdbuf[cmd_idx++] = 0xFF;
-//				cmdbuf[cmd_idx++] = 0xFF;
-//			}
-//			/* Emit write enable command */
-//			cmdbuf[cmd_idx++] = 0;
-//			cmdbuf[cmd_idx++] = 1;
-//			cmdbuf[cmd_idx++] = CMD_WRITE_ENABLE;
-//			/* Emit page program command */
-//			size_t write_count = program_size;
-//			if (write_count > len)
-//				write_count = len;
-//			cmdbuf[cmd_idx++] = (4 + write_count) >> 8;
-//			cmdbuf[cmd_idx++] = 4 + write_count;
-//			cmdbuf[cmd_idx++] = program_cmd;
-//			cmdbuf[cmd_idx++] = offset >> 16;
-//			cmdbuf[cmd_idx++] = offset >> 8;
-//			cmdbuf[cmd_idx++] = offset;
-//			memcpy(cmdbuf + cmd_idx, buf8, write_count);
-//			cmd_idx += write_count;
-//			buf8    += write_count;
-//			len     -= write_count;
-//			offset  += write_count;
-//			/* Emit wait for completion */
-//			cmdbuf[cmd_idx++] = 0xFF;
-//			cmdbuf[cmd_idx++] = 0xFF;
-//		}
-//		/* Emit the end marker */
-//		cmdbuf[cmd_idx++] = 0;
-//		cmdbuf[cmd_idx++] = 0;
-//
-//		/* Flush */
-//		aw_fel_write(dev, cmdbuf, dev->soc_info->spl_addr, cmd_idx);
-//		aw_fel_remotefunc_execute(dev, NULL);
-//		cmd_idx = 0;
-//	}
-//
-//	free(cmdbuf);
-//}
-
 void aw_fel_spiflash_write_helper(feldev_handle *dev,
-                 uint32_t offset, void *buf, size_t len,
-                 size_t erase_size, uint8_t erase_cmd,
-                 size_t program_size, uint8_t program_cmd)
- {
-     uint8_t *buf8 = (uint8_t *)buf;
-     size_t max_chunk_size = dev->soc_info->scratch_addr - dev->soc_info->spl_addr;
-     size_t cmd_idx, bank_sel;
+				  uint32_t offset, void *buf, size_t len,
+				  size_t erase_size, uint8_t erase_cmd,
+				  size_t program_size, uint8_t program_cmd)
+{
+	uint8_t *buf8 = (uint8_t *)buf;
+	size_t max_chunk_size = dev->soc_info->scratch_addr - dev->soc_info->spl_addr;
+	size_t cmd_idx,bank_sel;
 
-     if (max_chunk_size > 0x1000)
-         max_chunk_size = 0x1000;
-     uint8_t *cmdbuf = malloc(max_chunk_size);
-     cmd_idx = 0;
+	if (max_chunk_size > 0x1000)
+		max_chunk_size = 0x1000;
+	uint8_t *cmdbuf = malloc(max_chunk_size);
+	cmd_idx = 0;
 
-     prepare_spi_batch_data_transfer(dev, dev->soc_info->spl_addr);
-     //add bank support
-     {
-     cmd_idx = 0;
-     bank_sel = offset /SPI_FLASH_16MB_BOUN;
-     if (bank_sel == bank_curr)
-         goto bar_end;
+	prepare_spi_batch_data_transfer(dev, dev->soc_info->spl_addr);
 
-     /* Emit write enable command */
-     cmdbuf[cmd_idx++] = 0;
-     cmdbuf[cmd_idx++] = 1;
-     cmdbuf[cmd_idx++] = CMD_WRITE_ENABLE;
-     /* Emit write bank */
-     cmdbuf[cmd_idx++] = 0;
-     cmdbuf[cmd_idx++] = 2;
-     cmdbuf[cmd_idx++] = CMD_EXTNADDR_WREAR;
-     cmdbuf[cmd_idx++] = offset >> 24;
-     /* Emit wait for completion */
-     cmdbuf[cmd_idx++] = 0xFF;
-     cmdbuf[cmd_idx++] = 0xFF;
-     /* Emit the end marker */
-     cmdbuf[cmd_idx++] = 0;
-     cmdbuf[cmd_idx++] = 0;
-     aw_fel_write(dev, cmdbuf, dev->soc_info->spl_addr, cmd_idx);
-     aw_fel_remotefunc_execute(dev, NULL);
-     bar_end:
-         bank_curr = bank_sel;
-     }
+	//add bank support
+	{
+		cmd_idx = 0;
+		bank_sel = offset /SPI_FLASH_16MB_BOUN;
+		if (bank_sel == bank_curr)
+			goto bar_end;
 
-     cmd_idx = 0;
- }
+		/* Emit write enable command */
+		cmdbuf[cmd_idx++] = 0;
+		cmdbuf[cmd_idx++] = 1;
+		cmdbuf[cmd_idx++] = CMD_WRITE_ENABLE;
+		/* Emit write bank */
+		cmdbuf[cmd_idx++] = 0;
+		cmdbuf[cmd_idx++] = 2;
+		cmdbuf[cmd_idx++] = CMD_EXTNADDR_WREAR;
+		cmdbuf[cmd_idx++] = offset >> 24;
+		/* Emit wait for completion */
+		cmdbuf[cmd_idx++] = 0xFF;
+		cmdbuf[cmd_idx++] = 0xFF;
+		/* Emit the end marker */
+		cmdbuf[cmd_idx++] = 0;
+		cmdbuf[cmd_idx++] = 0;
+		aw_fel_write(dev, cmdbuf, dev->soc_info->spl_addr, cmd_idx);
+		aw_fel_remotefunc_execute(dev, NULL);
+		bar_end:
+			bank_curr = bank_sel;
+	}
+
+
+	cmd_idx = 0;
+
+	prepare_spi_batch_data_transfer(dev, dev->soc_info->spl_addr);
+
+	while (len > 0) {
+		while (len > 0 && max_chunk_size - cmd_idx > program_size + 64) {
+			if (offset % erase_size == 0) {
+				/* Emit write enable command */
+				cmdbuf[cmd_idx++] = 0;
+				cmdbuf[cmd_idx++] = 1;
+				cmdbuf[cmd_idx++] = CMD_WRITE_ENABLE;
+				/* Emit erase command */
+				cmdbuf[cmd_idx++] = 0;
+				cmdbuf[cmd_idx++] = 4;
+				cmdbuf[cmd_idx++] = erase_cmd;
+				cmdbuf[cmd_idx++] = offset >> 16;
+				cmdbuf[cmd_idx++] = offset >> 8;
+				cmdbuf[cmd_idx++] = offset;
+				/* Emit wait for completion */
+				cmdbuf[cmd_idx++] = 0xFF;
+				cmdbuf[cmd_idx++] = 0xFF;
+			}
+			/* Emit write enable command */
+			cmdbuf[cmd_idx++] = 0;
+			cmdbuf[cmd_idx++] = 1;
+			cmdbuf[cmd_idx++] = CMD_WRITE_ENABLE;
+			/* Emit page program command */
+			size_t write_count = program_size;
+			if (write_count > len)
+				write_count = len;
+			cmdbuf[cmd_idx++] = (4 + write_count) >> 8;
+			cmdbuf[cmd_idx++] = 4 + write_count;
+			cmdbuf[cmd_idx++] = program_cmd;
+			cmdbuf[cmd_idx++] = offset >> 16;
+			cmdbuf[cmd_idx++] = offset >> 8;
+			cmdbuf[cmd_idx++] = offset;
+			memcpy(cmdbuf + cmd_idx, buf8, write_count);
+			cmd_idx += write_count;
+			buf8    += write_count;
+			len     -= write_count;
+			offset  += write_count;
+			/* Emit wait for completion */
+			cmdbuf[cmd_idx++] = 0xFF;
+			cmdbuf[cmd_idx++] = 0xFF;
+		}
+		/* Emit the end marker */
+		cmdbuf[cmd_idx++] = 0;
+		cmdbuf[cmd_idx++] = 0;
+
+		/* Flush */
+		aw_fel_write(dev, cmdbuf, dev->soc_info->spl_addr, cmd_idx);
+		aw_fel_remotefunc_execute(dev, NULL);
+		cmd_idx = 0;
+	}
+
+	free(cmdbuf);
+}
+
 void aw_fel_spiflash_write(feldev_handle *dev,
 			   uint32_t offset, void *buf, size_t len,
 			   progress_cb_t progress)
