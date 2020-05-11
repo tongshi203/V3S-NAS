@@ -36,4 +36,9 @@ done
 
 lighttpd start -f /sbin/lighttpd.conf
 
+TS_DTMB_Control 738
+/ts/bluenet 0xb3-5053 0xb4-5054 &
+/ts/test 5053 &
+
+
 
