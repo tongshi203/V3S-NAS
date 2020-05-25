@@ -19,7 +19,15 @@
 
 /* This is got from BSP sources. */
 #define MIN_WIDTH	(32)
+
+#if defined(CONFIG_TS_GPIO_NAS)
 #define MIN_HEIGHT	(1)
+#endif
+
+#if defined(CONFIG_TS_GPIO_CAM)
+#define MIN_HEIGHT	(32)
+#endif // defined
+
 #define MAX_WIDTH	(4800)
 #define MAX_HEIGHT	(4800)
 
@@ -356,10 +364,15 @@ static int sun6i_video_try_fmt(struct sun6i_video *video,
 	if (!is_pixformat_valid(pixfmt->pixelformat))
 		pixfmt->pixelformat = supported_pixformats[0];
 
-//	v4l_bound_align_image(&pixfmt->width, MIN_WIDTH, MAX_WIDTH, 1,
-//			      &pixfmt->height, MIN_HEIGHT, MAX_WIDTH, 1, 1);
+#if defined(CONFIG_TS_GPIO_CAM)
+	v4l_bound_align_image(&pixfmt->width, MIN_WIDTH, MAX_WIDTH, 1,
+			      &pixfmt->height, MIN_HEIGHT, MAX_WIDTH, 1, 1);
+#endif
+
+#if defined(CONFIG_TS_GPIO_NAS)
 	v4l_bound_align_image(&pixfmt->width, MIN_WIDTH, MAX_WIDTH, 1,
 			      &pixfmt->height, MIN_HEIGHT, MAX_WIDTH, 0, 0);
+#endif
 
 	bpp = sun6i_csi_get_bpp(pixfmt->pixelformat);
 	pixfmt->bytesperline = (pixfmt->width * bpp) >> 3;
@@ -583,7 +596,7 @@ static int sun6i_video_link_validate(struct media_link *link)
 
 #if defined(CONFIG_TS_GPIO_CAM)
     source_fmt.format.code = MEDIA_BUS_FMT_SGRBG12_1X12;//MEDIA_BUS_FMT_JPEG_1X8;
-    source_fmt.format.width = 600;
+    source_fmt.format.width = 640;
     source_fmt.format.height = 512;
 #endif // defined
 
