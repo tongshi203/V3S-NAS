@@ -50,9 +50,9 @@ CV4l2DataPort::CV4l2DataPort()
 {
     video_fd = -1;
 
-    MyImage_Width = 600;
+    MyImage_Width = 640;
     MyImage_Height = 512;
-    MyImage_Size = 600 * 512 * 2;
+    MyImage_Size = 640 * 512 * 2;
 
 }
 
@@ -86,7 +86,7 @@ bool CV4l2DataPort::Initialize(char * VIDEO_DEVICE, int image_width,int image_he
         MyImage_Size = image_width *  image_height;
     else
         MyImage_Size = image_width *  image_height * 2;
-
+    printf("image_width = %d,image_height = %d,MyImage_Size = %d\n",image_width,image_height,MyImage_Size);
     video_fd = open(VIDEO_DEVICE, O_RDWR);  // | O_NONBLOCK);//打开摄像头
 
     if(video_fd < 0)
@@ -174,9 +174,9 @@ bool CV4l2DataPort::Initialize(char * VIDEO_DEVICE, int image_width,int image_he
             DBG("ioctl(VIDIOC_QUERYBUF) failed %d(%s)", errno, strerror(errno));
             return false;
         }
-//        DBG("buffer.length: %d", buffer.length);
-//        DBG("buffer.m.offset: %d", buffer.m.offset);
-        video_buffer_ptr[i] = (u8*) mmap(NULL, buffer.length, PROT_READ|PROT_WRITE, MAP_SHARED, video_fd, buffer.m.offset);//内存映射
+        DBG("buffer.length: %d", buffer.length);
+        DBG("buffer.m.offset: %d", buffer.m.offset);//
+        video_buffer_ptr[i] = (u8*) mmap(NULL, buffer.length, PROT_READ|PROT_WRITE, MAP_SHARED, video_fd, buffer.m.offset);//内存映射MAP_SHARED
         if (video_buffer_ptr[i] == MAP_FAILED)
         {
             DBG("mmap() failed %d(%s)", errno, strerror(errno));
